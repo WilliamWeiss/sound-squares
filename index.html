@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sound Square</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+
+    h1 { margin: 10px 0; }
+
+    #startButton {
+      font-size: 18px;
+      padding: 12px 20px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 12px;
+      background: white;
+      color: black;
+    }
+
+    #status {
+      margin-bottom: 10px;
+      color: #ccc;
+      font-size: 14px;
+      height: 20px;
+    }
+
+    .grid {
+      display: grid;
+      width: min(90vmin, 420px);
+      height: min(90vmin, 420px);
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 2%;
+    }
+
+    .square {
+      border: none;
+      border-radius: 18px;
+      font-size: clamp(16px, 4vmin, 28px);
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+      transition: 0.08s;
+    }
+
+    .square.active {
+      transform: scale(0.9);
+      filter: brightness(1.45);
+      box-shadow: 0 0 24px rgba(255,255,255,0.7);
+    }
+
+    .square.flat-active {
+      transform: scale(0.88);
+      filter: brightness(1.75);
+      box-shadow: 0 0 30px rgba(255,255,255,0.95);
+    }
+
+    .c { background: #ff6b6b; }
+    .d { background: #f7b267; }
+    .e { background: #ffd93d; color: #222; }
+    .f { background: #6bcb77; }
+    .g { background: #4d96ff; }
+    .a { background: #9d4edd; }
+    .b { background: #ff8fab; }
+  </style>
+</head>
+
+<body>
+
+  <h1>Sound Square</h1>
+
+  <button id="startButton">Start Audio</button>
+  <div id="status">Tap Start Audio</div>
+
+  <div class="grid">
+    <button class="square c" data-name="C3" data-note="130.81">C</button>
+    <button class="square d" data-name="D3" data-note="146.83" data-flat-name="Db3" data-flat-note="138.59">D</button>
+    <button class="square e" data-name="E3" data-note="164.81" data-flat-name="Eb3" data-flat-note="155.56">E</button>
+    <button class="square f" data-name="F3" data-note="174.61">F</button>
+
+    <button class="square g" data-name="G3" data-note="196.00" data-flat-name="Gb3" data-flat-note="185.00">G</button>
+    <button class="square a" data-name="A3" data-note="220.00" data-flat-name="Ab3" data-flat-note="207.65">A</button>
+    <button class="square b" data-name="B3" data-note="246.94" data-flat-name="Bb3" data-flat-note="233.08">B</button>
+    <button class="square c" data-name="C4" data-note="261.63">C</button>
+
+    <button class="square c" data-name="C4" data-note="261.63">C</button>
+    <button class="square d" data-name="D4" data-note="293.66" data-flat-name="Db4" data-flat-note="277.18">D</button>
+    <button class="square e" data-name="E4" data-note="329.63" data-flat-name="Eb4" data-flat-note="311.13">E</button>
+    <button class="square f" data-name="F4" data-note="349.23">F</button>
+
+    <button class="square g" data-name="G4" data-note="392.00" data-flat-name="Gb4" data-flat-note="369.99">G</button>
+    <button class="square a" data-name="A4" data-note="440.00" data-flat-name="Ab4" data-flat-note="415.30">A</button>
+    <button class="square b" data-name="B4" data-note="493.88" data-flat-name="Bb4" data-flat-note="466.16">B</button>
+    <button class="square c" data-name="C5" data-note="523.25">C</button>
+  </div>
+
+  <script>
+    let audioContext;
+    let currentFingerButton = null;
+    let holdTimer = null;
+    let holdTriggered = false;
+
+    const HOLD_TIME = 350;
+
+    const startButton = document.getElementById("startButton");
+    const statusText = document.getElementById("status");
+
+    function startAudio() {
+      if (audioContext) return;
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      osc.frequency.value = 440;
+      gain.gain.value = 0.05;
+
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.1);
+
+      statusText.textContent = "Audio Ready";
+      startButton.style.display = "none";
+    }
+
+    startButton.addEventListener("click", startAudio);
+    startButton.addEventListener("touchend", startAudio);
+
+    function playNote(freq) {
+      if (!audioContext) {
+        statusText.textContent = "Tap Start Audio first";
+        return;
+      }
+
+      const now = audioContext.currentTime;
+
+      const gain = audioContext.createGain();
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.28, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+      const osc = audioContext.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now);
+
+      const filter = audioContext.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1600, now);
+      filter.frequency.exponentialRampToValueAtTime(700, now + 0.7);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.8);
+    }
+
+    function flashButton(button, isFlat = false) {
+      button.classList.remove("active", "flat-active");
+      button.classList.add(isFlat ? "flat-active" : "active");
+
+      setTimeout(() => {
+        button.classList.remove("active", "flat-active");
+      }, 140);
+    }
+
+    function playNatural(button) {
+      playNote(parseFloat(button.dataset.note));
+      statusText.textContent = button.dataset.name;
+      flashButton(button, false);
+    }
+
+    function playFlat(button) {
+      if (!button.dataset.flatNote) {
+        statusText.textContent = button.dataset.name + " has no flat here";
+        flashButton(button, false);
+        return;
+      }
+
+      playNote(parseFloat(button.dataset.flatNote));
+      statusText.textContent = button.dataset.flatName;
+      flashButton(button, true);
+    }
+
+    function clearHoldTimer() {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+    }
+
+    function startPress(button) {
+      if (!audioContext) {
+        statusText.textContent = "Tap Start Audio first";
+        return;
+      }
+
+      currentFingerButton = button;
+      holdTriggered = false;
+
+      clearHoldTimer();
+
+      holdTimer = setTimeout(() => {
+        holdTriggered = true;
+        playFlat(button);
+      }, HOLD_TIME);
+    }
+
+    function endPress(button) {
+      if (!audioContext) return;
+
+      clearHoldTimer();
+
+      if (!holdTriggered) {
+        playNatural(button);
+      }
+
+      currentFingerButton = null;
+      holdTriggered = false;
+    }
+
+    function cancelPress() {
+      clearHoldTimer();
+      currentFingerButton = null;
+      holdTriggered = false;
+    }
+
+    function buttonFromPoint(x, y) {
+      const element = document.elementFromPoint(x, y);
+      if (element && element.classList.contains("square")) {
+        return element;
+      }
+      return null;
+    }
+
+    document.querySelectorAll(".square").forEach(button => {
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        startPress(button);
+      });
+
+      button.addEventListener("pointerup", event => {
+        event.preventDefault();
+        endPress(button);
+      });
+
+      button.addEventListener("pointerleave", () => {
+        if (currentFingerButton === button && !holdTriggered) {
+          clearHoldTimer();
+        }
+      });
+    });
+
+    document.addEventListener("pointermove", event => {
+      if (!currentFingerButton) return;
+
+      const newButton = buttonFromPoint(event.clientX, event.clientY);
+
+      if (newButton && newButton !== currentFingerButton) {
+        clearHoldTimer();
+
+        currentFingerButton = newButton;
+        holdTriggered = false;
+
+        playNatural(newButton);
+
+        holdTimer = setTimeout(() => {
+          holdTriggered = true;
+          playFlat(newButton);
+        }, HOLD_TIME);
+      }
+    });
+
+    document.addEventListener("pointerup", () => {
+      cancelPress();
+    });
+
+    document.addEventListener("pointercancel", cancelPress);
+  </script>
+
+</body>
+</html>
