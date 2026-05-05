@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Raga Bhupali Sound Square</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #18120c;
+      color: #f5ead7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-weight: 500;
+    }
+
+    #startButton {
+      font-size: 18px;
+      padding: 12px 20px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 12px;
+      background: #d08a2d;
+      color: #18120c;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-bottom: 10px;
+      color: #d9c3a0;
+      font-size: 14px;
+      height: 20px;
+    }
+
+    .grid {
+      display: grid;
+      width: min(90vmin, 420px);
+      height: min(90vmin, 420px);
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 2%;
+    }
+
+    .square {
+      border: none;
+      border-radius: 18px;
+      font-size: clamp(16px, 4vmin, 28px);
+      font-weight: bold;
+      color: #fff4df;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+      transition: 0.08s;
+    }
+
+    .square.active {
+      transform: scale(0.9);
+      filter: brightness(1.35);
+      box-shadow: 0 0 24px rgba(255, 190, 105, 0.75);
+    }
+
+    .sa  { background: #8a3f2d; }  /* clay red */
+    .re  { background: #b06f2f; }  /* saffron brown */
+    .ga  { background: #c49a3a; }  /* muted gold */
+    .pa  { background: #4f6f5d; }  /* deep green */
+    .dha { background: #3e536f; }  /* indigo blue */
+  </style>
+</head>
+
+<body>
+
+  <h1>Raga Bhupali Square</h1>
+
+  <button id="startButton">Start Audio</button>
+  <div id="status">Tap Start Audio</div>
+
+  <div class="grid">
+    <button class="square sa"  data-name="Sa3"  data-note="130.81">Sa</button>
+    <button class="square re"  data-name="Re3"  data-note="146.83">Re</button>
+    <button class="square ga"  data-name="Ga3"  data-note="164.81">Ga</button>
+    <button class="square pa"  data-name="Pa3"  data-note="196.00">Pa</button>
+
+    <button class="square dha" data-name="Dha3" data-note="220.00">Dha</button>
+    <button class="square sa"  data-name="Sa4"  data-note="261.63">Sa</button>
+    <button class="square re"  data-name="Re4"  data-note="293.66">Re</button>
+    <button class="square ga"  data-name="Ga4"  data-note="329.63">Ga</button>
+
+    <button class="square pa"  data-name="Pa4"  data-note="392.00">Pa</button>
+    <button class="square dha" data-name="Dha4" data-note="440.00">Dha</button>
+    <button class="square sa"  data-name="Sa5"  data-note="523.25">Sa</button>
+    <button class="square re"  data-name="Re5"  data-note="587.33">Re</button>
+
+    <button class="square ga"  data-name="Ga5"  data-note="659.25">Ga</button>
+    <button class="square pa"  data-name="Pa5"  data-note="783.99">Pa</button>
+    <button class="square dha" data-name="Dha5" data-note="880.00">Dha</button>
+    <button class="square sa"  data-name="Sa6"  data-note="1046.50">Sa</button>
+  </div>
+
+  <script>
+    let audioContext;
+    let currentFingerButton = null;
+    let droneOsc1 = null;
+    let droneOsc2 = null;
+    let droneGain = null;
+
+    const startButton = document.getElementById("startButton");
+    const statusText = document.getElementById("status");
+
+    function startAudio() {
+      if (audioContext) return;
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+      // tiny test tone
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.frequency.value = 440;
+      gain.gain.value = 0.04;
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.1);
+
+      startDrone();
+
+      statusText.textContent = "Audio Ready";
+      startButton.style.display = "none";
+    }
+
+    startButton.addEventListener("click", startAudio);
+    startButton.addEventListener("touchend", startAudio);
+
+    function startDrone() {
+      const now = audioContext.currentTime;
+
+      droneGain = audioContext.createGain();
+      droneGain.gain.setValueAtTime(0.0001, now);
+      droneGain.gain.exponentialRampToValueAtTime(0.045, now + 1.0);
+
+      const droneFilter = audioContext.createBiquadFilter();
+      droneFilter.type = "lowpass";
+      droneFilter.frequency.value = 600;
+
+      droneOsc1 = audioContext.createOscillator();
+      droneOsc1.type = "sine";
+      droneOsc1.frequency.value = 130.81; // Sa
+
+      droneOsc2 = audioContext.createOscillator();
+      droneOsc2.type = "sine";
+      droneOsc2.frequency.value = 196.00; // Pa
+
+      droneOsc1.connect(droneFilter);
+      droneOsc2.connect(droneFilter);
+      droneFilter.connect(droneGain);
+      droneGain.connect(audioContext.destination);
+
+      droneOsc1.start();
+      droneOsc2.start();
+    }
+
+    function playNote(freq) {
+      if (!audioContext) {
+        statusText.textContent = "Tap Start Audio first";
+        return;
+      }
+
+      const now = audioContext.currentTime;
+
+      const gain = audioContext.createGain();
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.23, now + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.35);
+
+      const osc1 = audioContext.createOscillator();
+      osc1.type = "triangle";
+      osc1.frequency.setValueAtTime(freq, now);
+
+      const osc2 = audioContext.createOscillator();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(freq * 2, now);
+
+      const osc2Gain = audioContext.createGain();
+      osc2Gain.gain.value = 0.12;
+
+      const filter = audioContext.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1300, now);
+      filter.frequency.exponentialRampToValueAtTime(500, now + 1.1);
+
+      osc1.connect(filter);
+      osc2.connect(osc2Gain);
+      osc2Gain.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+
+      osc1.stop(now + 1.35);
+      osc2.stop(now + 1.35);
+    }
+
+    function flashButton(button) {
+      button.classList.add("active");
+      setTimeout(() => button.classList.remove("active"), 150);
+    }
+
+    function triggerButton(button) {
+      if (!button || button === currentFingerButton) return;
+
+      currentFingerButton = button;
+      playNote(parseFloat(button.dataset.note));
+      statusText.textContent = button.dataset.name;
+      flashButton(button);
+    }
+
+    function buttonFromPoint(x, y) {
+      const element = document.elementFromPoint(x, y);
+      if (element && element.classList.contains("square")) {
+        return element;
+      }
+      return null;
+    }
+
+    document.querySelectorAll(".square").forEach(button => {
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        triggerButton(button);
+      });
+    });
+
+    document.addEventListener("pointermove", event => {
+      if (event.buttons !== 1 && event.pointerType === "mouse") return;
+
+      const button = buttonFromPoint(event.clientX, event.clientY);
+      if (button) triggerButton(button);
+    });
+
+    document.addEventListener("pointerup", () => {
+      currentFingerButton = null;
+    });
+
+    document.addEventListener("pointercancel", () => {
+      currentFingerButton = null;
+    });
+  </script>
+
+</body>
+</html>

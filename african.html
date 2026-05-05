@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>African Sound Square</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #16140f;
+      color: #f4e7d3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+
+    h1 { margin: 10px 0; font-weight: 500; }
+
+    #startButton {
+      font-size: 18px;
+      padding: 12px 20px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 12px;
+      background: #c58a2a;
+      color: #16140f;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-bottom: 10px;
+      color: #d4c3a1;
+      font-size: 14px;
+      height: 20px;
+    }
+
+    .grid {
+      display: grid;
+      width: min(90vmin, 420px);
+      height: min(90vmin, 420px);
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 2%;
+    }
+
+    .square {
+      border: none;
+      border-radius: 18px;
+      font-size: clamp(15px, 3.5vmin, 26px);
+      font-weight: bold;
+      color: #fff2dd;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+      transition: 0.08s;
+    }
+
+    .square.active {
+      transform: scale(0.88);
+      filter: brightness(1.4);
+      box-shadow: 0 0 26px rgba(255, 180, 80, 0.8);
+    }
+
+    .c { background: #8b3e2f; }  /* earth red */
+    .d { background: #a86f2f; }  /* clay orange */
+    .f { background: #8b7a3f; }  /* dry grass */
+    .g { background: #4f6f4f; }  /* forest */
+    .a { background: #6b4f2f; }  /* wood brown */
+  </style>
+</head>
+
+<body>
+
+  <h1>African Sound Square</h1>
+
+  <button id="startButton">Start Audio</button>
+  <div id="status">Tap Start Audio</div>
+
+  <div class="grid">
+    <button class="square c" data-name="C3" data-note="130.81">C</button>
+    <button class="square d" data-name="D3" data-note="146.83">D</button>
+    <button class="square f" data-name="F3" data-note="174.61">F</button>
+    <button class="square g" data-name="G3" data-note="196.00">G</button>
+
+    <button class="square a" data-name="A3" data-note="220.00">A</button>
+    <button class="square c" data-name="C4" data-note="261.63">C</button>
+    <button class="square d" data-name="D4" data-note="293.66">D</button>
+    <button class="square f" data-name="F4" data-note="349.23">F</button>
+
+    <button class="square g" data-name="G4" data-note="392.00">G</button>
+    <button class="square a" data-name="A4" data-note="440.00">A</button>
+    <button class="square c" data-name="C5" data-note="523.25">C</button>
+    <button class="square d" data-name="D5" data-note="587.33">D</button>
+
+    <button class="square f" data-name="F5" data-note="698.46">F</button>
+    <button class="square g" data-name="G5" data-note="783.99">G</button>
+    <button class="square a" data-name="A5" data-note="880.00">A</button>
+    <button class="square c" data-name="C5" data-note="523.25">C</button>
+  </div>
+
+  <script>
+    let audioContext;
+    let currentFingerButton = null;
+
+    const startButton = document.getElementById("startButton");
+    const statusText = document.getElementById("status");
+
+    function startAudio() {
+      if (audioContext) return;
+
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      osc.frequency.value = 440;
+      gain.gain.value = 0.04;
+
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.1);
+
+      statusText.textContent = "Audio Ready";
+      startButton.style.display = "none";
+    }
+
+    startButton.addEventListener("click", startAudio);
+    startButton.addEventListener("touchend", startAudio);
+
+    function playNote(freq) {
+      if (!audioContext) {
+        statusText.textContent = "Tap Start Audio first";
+        return;
+      }
+
+      const now = audioContext.currentTime;
+
+      const gain = audioContext.createGain();
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.28, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+
+      const osc = audioContext.createOscillator();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now);
+
+      const click = audioContext.createOscillator();
+      click.type = "square";
+      click.frequency.setValueAtTime(freq * 4, now);
+
+      const clickGain = audioContext.createGain();
+      clickGain.gain.setValueAtTime(0.08, now);
+      clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+      const filter = audioContext.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(2000, now);
+      filter.frequency.exponentialRampToValueAtTime(700, now + 0.3);
+
+      osc.connect(filter);
+      click.connect(clickGain);
+      clickGain.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc.start(now);
+      click.start(now);
+
+      osc.stop(now + 0.4);
+      click.stop(now + 0.05);
+    }
+
+    function flashButton(button) {
+      button.classList.add("active");
+      setTimeout(() => button.classList.remove("active"), 100);
+    }
+
+    function triggerButton(button) {
+      if (!button || button === currentFingerButton) return;
+
+      currentFingerButton = button;
+      playNote(parseFloat(button.dataset.note));
+      statusText.textContent = button.dataset.name;
+      flashButton(button);
+    }
+
+    function buttonFromPoint(x, y) {
+      const element = document.elementFromPoint(x, y);
+      if (element && element.classList.contains("square")) {
+        return element;
+      }
+      return null;
+    }
+
+    document.querySelectorAll(".square").forEach(button => {
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        triggerButton(button);
+      });
+    });
+
+    document.addEventListener("pointermove", event => {
+      if (event.buttons !== 1 && event.pointerType === "mouse") return;
+
+      const button = buttonFromPoint(event.clientX, event.clientY);
+      if (button) triggerButton(button);
+    });
+
+    document.addEventListener("pointerup", () => {
+      currentFingerButton = null;
+    });
+
+    document.addEventListener("pointercancel", () => {
+      currentFingerButton = null;
+    });
+  </script>
+
+</body>
+</html>
