@@ -1,4 +1,4 @@
-# sound-squares
+# orumi
 
 simple sound language - press button and hear a note.
 
