@@ -38,8 +38,10 @@
     #status {
       margin-bottom: 10px;
       color: #ccc;
-      font-size: 14px;
-      height: 20px;
+      font-size: 18px;
+      height: 26px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
     .back-button {
@@ -61,67 +63,42 @@
 
     .grid {
       display: grid;
-      width: min(90vmin, 420px);
-      height: min(90vmin, 420px);
+      width: min(90vmin, 440px);
+      height: min(90vmin, 440px);
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(4, 1fr);
       gap: 2%;
     }
 
     .square {
-      position: relative;
-      overflow: hidden;
-
       border: none;
       border-radius: 18px;
-      font-size: clamp(14px, 3.5vmin, 24px);
+      font-size: clamp(13px, 3.3vmin, 22px);
       font-weight: bold;
       color: white;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
       transition: 0.08s;
-    }
-
-    .square::after {
-      content: attr(data-flat-name);
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      background: rgba(255,255,255,0.22);
-      color: white;
-      font-size: 0.72em;
-      opacity: 0;
-      transform: scale(0.75);
-      transition:
-        opacity 0.25s ease,
-        transform 0.25s ease;
-      pointer-events: none;
-    }
-
-    .square.holding-flat::after {
-      opacity: 1;
-      transform: scale(1);
+      cursor: pointer;
     }
 
     .square.active {
       transform: scale(0.9);
       filter: brightness(1.45);
-      box-shadow: 0 0 24px rgba(255,255,255,0.7);
+      box-shadow: 0 0 26px rgba(255,255,255,0.8);
     }
 
-    .square.flat-active {
-      transform: scale(0.88);
-      filter: brightness(1.75);
-      box-shadow: 0 0 30px rgba(255,255,255,0.95);
-    }
-
-    .c { background: #ff6b6b; }
-    .d { background: #f7b267; }
-    .e { background: #ffd93d; color: #222; }
-    .f { background: #6bcb77; }
-    .g { background: #4d96ff; }
-    .a { background: #9d4edd; }
-    .b { background: #ff8fab; }
+    .c  { background: #ff6b6b; }
+    .db { background: linear-gradient(135deg, #ff6b6b, #f7b267); }
+    .d  { background: #f7b267; }
+    .eb { background: linear-gradient(135deg, #f7b267, #ffd93d); color: #222; }
+    .e  { background: #ffd93d; color: #222; }
+    .f  { background: #6bcb77; }
+    .gb { background: linear-gradient(135deg, #6bcb77, #4d96ff); }
+    .g  { background: #4d96ff; }
+    .ab { background: linear-gradient(135deg, #4d96ff, #9d4edd); }
+    .a  { background: #9d4edd; }
+    .bb { background: linear-gradient(135deg, #9d4edd, #ff8fab); }
+    .b  { background: #ff8fab; }
   </style>
 </head>
 
@@ -132,153 +109,57 @@
   <h1>Western Sound Square</h1>
 
   <button id="startButton">Start Audio</button>
-
   <div id="status">Tap Start Audio</div>
 
   <div class="grid">
+    <button class="square c"  data-name="C3"  data-note="130.81" data-pc="C"  data-midi="48">C3</button>
+    <button class="square db" data-name="Db3" data-note="138.59" data-pc="Db" data-midi="49">Db3</button>
+    <button class="square d"  data-name="D3"  data-note="146.83" data-pc="D"  data-midi="50">D3</button>
+    <button class="square eb" data-name="Eb3" data-note="155.56" data-pc="Eb" data-midi="51">Eb3</button>
 
-    <!-- ROW 1 -->
-    <button class="square c"
-      data-name="C3"
-      data-note="130.81">
-      C3
-    </button>
+    <button class="square e"  data-name="E3"  data-note="164.81" data-pc="E"  data-midi="52">E3</button>
+    <button class="square f"  data-name="F3"  data-note="174.61" data-pc="F"  data-midi="53">F3</button>
+    <button class="square gb" data-name="Gb3" data-note="185.00" data-pc="Gb" data-midi="54">Gb3</button>
+    <button class="square g"  data-name="G3"  data-note="196.00" data-pc="G"  data-midi="55">G3</button>
 
-    <button class="square d"
-      data-name="D3"
-      data-note="146.83"
-      data-flat-name="Db3"
-      data-flat-note="138.59">
-      D3
-    </button>
+    <button class="square ab" data-name="Ab3" data-note="207.65" data-pc="Ab" data-midi="56">Ab3</button>
+    <button class="square a"  data-name="A3"  data-note="220.00" data-pc="A"  data-midi="57">A3</button>
+    <button class="square bb" data-name="Bb3" data-note="233.08" data-pc="Bb" data-midi="58">Bb3</button>
+    <button class="square b"  data-name="B3"  data-note="246.94" data-pc="B"  data-midi="59">B3</button>
 
-    <button class="square e"
-      data-name="E3"
-      data-note="164.81"
-      data-flat-name="Eb3"
-      data-flat-note="155.56">
-      E3
-    </button>
-
-    <button class="square f"
-      data-name="F3"
-      data-note="174.61">
-      F3
-    </button>
-
-    <!-- ROW 2 -->
-    <button class="square g"
-      data-name="G3"
-      data-note="196.00"
-      data-flat-name="Gb3"
-      data-flat-note="185.00">
-      G3
-    </button>
-
-    <button class="square a"
-      data-name="A3"
-      data-note="220.00"
-      data-flat-name="Ab3"
-      data-flat-note="207.65">
-      A3
-    </button>
-
-    <button class="square b"
-      data-name="B3"
-      data-note="246.94"
-      data-flat-name="Bb3"
-      data-flat-note="233.08">
-      B3
-    </button>
-
-    <button class="square c"
-      data-name="C4"
-      data-note="261.63">
-      C4
-    </button>
-
-    <!-- ROW 3 -->
-    <button class="square d"
-      data-name="D4"
-      data-note="293.66"
-      data-flat-name="Db4"
-      data-flat-note="277.18">
-      D4
-    </button>
-
-    <button class="square e"
-      data-name="E4"
-      data-note="329.63"
-      data-flat-name="Eb4"
-      data-flat-note="311.13">
-      E4
-    </button>
-
-    <button class="square f"
-      data-name="F4"
-      data-note="349.23">
-      F4
-    </button>
-
-    <button class="square g"
-      data-name="G4"
-      data-note="392.00"
-      data-flat-name="Gb4"
-      data-flat-note="369.99">
-      G4
-    </button>
-
-    <!-- ROW 4 -->
-    <button class="square a"
-      data-name="A4"
-      data-note="440.00"
-      data-flat-name="Ab4"
-      data-flat-note="415.30">
-      A4
-    </button>
-
-    <button class="square b"
-      data-name="B4"
-      data-note="493.88"
-      data-flat-name="Bb4"
-      data-flat-note="466.16">
-      B4
-    </button>
-
-    <button class="square c"
-      data-name="C5"
-      data-note="523.25">
-      C5
-    </button>
-
-    <button class="square d"
-      data-name="D5"
-      data-note="587.33"
-      data-flat-name="Db5"
-      data-flat-note="554.37">
-      D5
-    </button>
-
+    <button class="square c"  data-name="C4"  data-note="261.63" data-pc="C"  data-midi="60">C4</button>
+    <button class="square db" data-name="Db4" data-note="277.18" data-pc="Db" data-midi="61">Db4</button>
+    <button class="square d"  data-name="D4"  data-note="293.66" data-pc="D"  data-midi="62">D4</button>
+    <button class="square eb" data-name="Eb4" data-note="311.13" data-pc="Eb" data-midi="63">Eb4</button>
   </div>
 
   <script>
-
     let audioContext;
-    let currentFingerButton = null;
-    let holdTimer = null;
-    let holdTriggered = false;
-
-    const HOLD_TIME = 350;
 
     const startButton = document.getElementById("startButton");
     const statusText = document.getElementById("status");
 
-    function startAudio() {
+    const activeNotes = new Map();
 
+    const pcToNumber = {
+      C: 0,
+      Db: 1,
+      D: 2,
+      Eb: 3,
+      E: 4,
+      F: 5,
+      Gb: 6,
+      G: 7,
+      Ab: 8,
+      A: 9,
+      Bb: 10,
+      B: 11
+    };
+
+    function startAudio() {
       if (audioContext) return;
 
-      audioContext =
-        new (window.AudioContext || window.webkitAudioContext)();
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
@@ -293,289 +174,186 @@
       osc.stop(audioContext.currentTime + 0.1);
 
       statusText.textContent = "Audio Ready";
-
       startButton.style.display = "none";
     }
 
     startButton.addEventListener("click", startAudio);
     startButton.addEventListener("touchend", startAudio);
 
-    function playNote(freq) {
-
+    function startSustainedNote(button, pointerId) {
       if (!audioContext) {
-        statusText.textContent =
-          "Tap Start Audio first";
+        statusText.textContent = "Tap Start Audio first";
         return;
       }
 
       const now = audioContext.currentTime;
+      const freq = parseFloat(button.dataset.note);
 
       const gain = audioContext.createGain();
-
       gain.gain.setValueAtTime(0.0001, now);
-
-      gain.gain.exponentialRampToValueAtTime(
-        0.28,
-        now + 0.015
-      );
-
-      gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        now + 0.8
-      );
+      gain.gain.exponentialRampToValueAtTime(0.18, now + 0.025);
 
       const osc = audioContext.createOscillator();
-
       osc.type = "triangle";
-
       osc.frequency.setValueAtTime(freq, now);
 
-      const filter =
-        audioContext.createBiquadFilter();
-
+      const filter = audioContext.createBiquadFilter();
       filter.type = "lowpass";
-
-      filter.frequency.setValueAtTime(1600, now);
-
-      filter.frequency.exponentialRampToValueAtTime(
-        700,
-        now + 0.7
-      );
+      filter.frequency.setValueAtTime(1500, now);
 
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(audioContext.destination);
 
       osc.start(now);
-      osc.stop(now + 0.8);
+
+      activeNotes.set(pointerId, {
+        button,
+        osc,
+        gain,
+        pc: button.dataset.pc,
+        name: button.dataset.name,
+        midi: parseInt(button.dataset.midi, 10)
+      });
+
+      button.classList.add("active");
+      updateStatus();
     }
 
-    function flashButton(button, isFlat = false) {
+    function stopSustainedNote(pointerId) {
+      const note = activeNotes.get(pointerId);
+      if (!note || !audioContext) return;
 
-      button.classList.remove(
-        "active",
-        "flat-active"
-      );
+      const now = audioContext.currentTime;
 
-      button.classList.add(
-        isFlat ? "flat-active" : "active"
-      );
+      note.gain.gain.cancelScheduledValues(now);
+      note.gain.gain.setValueAtTime(note.gain.gain.value, now);
+      note.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
 
-      setTimeout(() => {
+      note.osc.stop(now + 0.1);
+      note.button.classList.remove("active");
 
-        button.classList.remove(
-          "active",
-          "flat-active"
-        );
-
-      }, 140);
+      activeNotes.delete(pointerId);
+      updateStatus();
     }
 
-    function playNatural(button) {
+    function updateStatus() {
+      const notes = Array.from(activeNotes.values())
+        .sort((a, b) => a.midi - b.midi);
 
-      playNote(
-        parseFloat(button.dataset.note)
-      );
-
-      statusText.textContent =
-        button.dataset.name;
-
-      flashButton(button, false);
-    }
-
-    function playFlat(button) {
-
-      if (!button.dataset.flatNote) {
-
-        statusText.textContent =
-          button.dataset.name +
-          " has no flat here";
-
-        flashButton(button, false);
-
+      if (notes.length === 0) {
+        statusText.textContent = " ";
         return;
       }
 
-      playNote(
-        parseFloat(button.dataset.flatNote)
-      );
-
-      statusText.textContent =
-        button.dataset.flatName;
-
-      flashButton(button, true);
+      if (notes.length >= 3) {
+        statusText.textContent = nameChord(notes);
+      } else {
+        statusText.textContent = notes.map(n => n.name).join(" – ");
+      }
     }
 
-    function clearHoldTimer() {
+    function nameChord(notes) {
+      const pcs = [];
+      const pcSeen = new Set();
 
-      if (holdTimer) {
+      notes.forEach(note => {
+        if (!pcSeen.has(note.pc)) {
+          pcs.push(note.pc);
+          pcSeen.add(note.pc);
+        }
+      });
 
-        clearTimeout(holdTimer);
+      const numbers = pcs.map(pc => pcToNumber[pc]);
+      const lowestPc = notes[0].pc;
 
-        holdTimer = null;
+      for (const rootPc of pcs) {
+        const root = pcToNumber[rootPc];
+
+        const has = interval =>
+          numbers.includes((root + interval) % 12);
+
+        const majorTriad = has(4) && has(7);
+        const minorTriad = has(3) && has(7);
+        const diminishedTriad = has(3) && has(6);
+
+        const major7 = has(11);
+        const dominant7 = has(10);
+
+        if (majorTriad) {
+          const inversion = getInversion(rootPc, lowestPc);
+
+          if (major7) return rootPc + inversion + "7";
+          if (dominant7) return rootPc + inversion + "D7";
+
+          return rootPc + inversion;
+        }
+
+        if (minorTriad) {
+          return rootPc + "m" + getInversion(rootPc, lowestPc);
+        }
+
+        if (diminishedTriad) {
+          return rootPc + "dim" + getInversion(rootPc, lowestPc);
+        }
       }
 
-      document
-        .querySelectorAll(".holding-flat")
-        .forEach(button => {
-          button.classList.remove("holding-flat");
-        });
+      return pcs.join(" – ");
     }
 
-    function startPress(button) {
+    function getInversion(rootPc, lowestPc) {
+      const root = pcToNumber[rootPc];
+      const lowest = pcToNumber[lowestPc];
+      const interval = (lowest - root + 12) % 12;
 
-      if (!audioContext) {
+      if (interval === 0) return "1";
+      if (interval === 3 || interval === 4) return "2";
+      if (interval === 6 || interval === 7) return "3";
+      if (interval === 10 || interval === 11) return "4";
 
-        statusText.textContent =
-          "Tap Start Audio first";
-
-        return;
-      }
-
-      currentFingerButton = button;
-
-      holdTriggered = false;
-
-      clearHoldTimer();
-
-      if (button.dataset.flatName) {
-        button.classList.add("holding-flat");
-      }
-
-      holdTimer = setTimeout(() => {
-
-        holdTriggered = true;
-
-        button.classList.remove("holding-flat");
-
-        playFlat(button);
-
-      }, HOLD_TIME);
+      return "1";
     }
 
-    function endPress(button) {
+    function getSquareFromEvent(event) {
+      const element = document.elementFromPoint(event.clientX, event.clientY);
 
-      if (!audioContext) return;
-
-      clearHoldTimer();
-
-      if (!holdTriggered) {
-        playNatural(button);
-      }
-
-      currentFingerButton = null;
-      holdTriggered = false;
-    }
-
-    function cancelPress() {
-
-      clearHoldTimer();
-
-      currentFingerButton = null;
-
-      holdTriggered = false;
-    }
-
-    function buttonFromPoint(x, y) {
-
-      const element =
-        document.elementFromPoint(x, y);
-
-      if (
-        element &&
-        element.classList.contains("square")
-      ) {
+      if (element && element.classList.contains("square")) {
         return element;
       }
 
       return null;
     }
 
-    document
-      .querySelectorAll(".square")
-      .forEach(button => {
+    document.querySelectorAll(".square").forEach(button => {
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
 
-        button.addEventListener(
-          "pointerdown",
-          event => {
+        if (!audioContext) {
+          statusText.textContent = "Tap Start Audio first";
+          return;
+        }
 
-            event.preventDefault();
-
-            startPress(button);
-          }
-        );
-
-        button.addEventListener(
-          "pointerup",
-          event => {
-
-            event.preventDefault();
-
-            endPress(button);
-          }
-        );
-
-        button.addEventListener(
-          "pointerleave",
-          () => {
-
-            if (
-              currentFingerButton === button &&
-              !holdTriggered
-            ) {
-              clearHoldTimer();
-            }
-          }
-        );
+        button.setPointerCapture(event.pointerId);
+        startSustainedNote(button, event.pointerId);
       });
 
-    document.addEventListener(
-      "pointermove",
-      event => {
+      button.addEventListener("pointerup", event => {
+        event.preventDefault();
+        stopSustainedNote(event.pointerId);
+      });
 
-        if (!currentFingerButton) return;
+      button.addEventListener("pointercancel", event => {
+        stopSustainedNote(event.pointerId);
+      });
+    });
 
-        const newButton =
-          buttonFromPoint(
-            event.clientX,
-            event.clientY
-          );
+    document.addEventListener("pointerup", event => {
+      stopSustainedNote(event.pointerId);
+    });
 
-        if (
-          newButton &&
-          newButton !== currentFingerButton
-        ) {
-
-          clearHoldTimer();
-
-          currentFingerButton = newButton;
-
-          holdTriggered = false;
-
-          playNatural(newButton);
-
-          holdTimer = setTimeout(() => {
-
-            holdTriggered = true;
-
-            playFlat(newButton);
-
-          }, HOLD_TIME);
-        }
-      }
-    );
-
-    document.addEventListener(
-      "pointerup",
-      () => {
-        cancelPress();
-      }
-    );
-
-    document.addEventListener(
-      "pointercancel",
-      cancelPress
-    );
+    document.addEventListener("pointercancel", event => {
+      stopSustainedNote(event.pointerId);
+    });
 
   </script>
 
