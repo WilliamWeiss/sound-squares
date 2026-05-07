@@ -3,7 +3,6 @@
 <head>
   <title>Maqam Hijaz Sound Square</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <style>
     body {
@@ -60,23 +59,22 @@
       transition: 0.08s;
     }
 
-   .back-button {
-	position: fixed;
-  	top: 18px;
-  	left: 18px;
-  	padding: 10px 14px;
-  	border-radius: 999px;
-  	text-decoration: none;
-  	font-family: system-ui, sans-serif;
-  	font-size: 14px;
-  	font-weight: 600;
-  	color: #222;
-  	background: rgba(255, 255, 255, 0.82);
-  	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  	backdrop-filter: blur(8px);
-  	z-index: 1000;
+    .back-button {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
     }
-
 
     .square.active {
       transform: scale(0.9);
@@ -84,17 +82,19 @@
       box-shadow: 0 0 24px rgba(219, 157, 84, 0.75);
     }
 
-    .c  { background: #7a2f2f; }  /* deep red */
-    .db { background: #9b5a3c; }  /* burnt clay */
-    .e  { background: #c08a43; }  /* bronze gold */
-    .f  { background: #6f6046; }  /* olive stone */
-    .g  { background: #3f6359; }  /* dark teal */
-    .ab { background: #5b4a6b; }  /* dusk violet */
-    .b  { background: #8a5f6a; }  /* rose umber */
+    .c  { background: #7a2f2f; }
+    .db { background: #9b5a3c; }
+    .e  { background: #c08a43; }
+    .f  { background: #6f6046; }
+    .g  { background: #3f6359; }
+    .ab { background: #5b4a6b; }
+    .b  { background: #8a5f6a; }
   </style>
 </head>
 
 <body>
+
+  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <h1>Maqam Hijaz Square</h1>
 
@@ -102,25 +102,25 @@
   <div id="status">Tap Start Audio</div>
 
   <div class="grid">
-    <button class="square c"  data-name="C3"  data-note="130.81">C</button>
-    <button class="square db" data-name="Db3" data-note="138.59">Db</button>
-    <button class="square e"  data-name="E3"  data-note="164.81">E</button>
-    <button class="square f"  data-name="F3"  data-note="174.61">F</button>
+    <button class="square c"  data-name="C3"  data-note="130.81">C3</button>
+    <button class="square db" data-name="Db3" data-note="138.59">Db3</button>
+    <button class="square e"  data-name="E3"  data-note="164.81">E3</button>
+    <button class="square f"  data-name="F3"  data-note="174.61">F3</button>
 
-    <button class="square g"  data-name="G3"  data-note="196.00">G</button>
-    <button class="square ab" data-name="Ab3" data-note="207.65">Ab</button>
-    <button class="square b"  data-name="B3"  data-note="246.94">B</button>
-    <button class="square c"  data-name="C4"  data-note="261.63">C</button>
+    <button class="square g"  data-name="G3"  data-note="196.00">G3</button>
+    <button class="square ab" data-name="Ab3" data-note="207.65">Ab3</button>
+    <button class="square b"  data-name="B3"  data-note="246.94">B3</button>
+    <button class="square c"  data-name="C4"  data-note="261.63">C4</button>
 
-    <button class="square db" data-name="Db4" data-note="277.18">Db</button>
-    <button class="square e"  data-name="E4"  data-note="329.63">E</button>
-    <button class="square f"  data-name="F4"  data-note="349.23">F</button>
-    <button class="square g"  data-name="G4"  data-note="392.00">G</button>
+    <button class="square db" data-name="Db4" data-note="277.18">Db4</button>
+    <button class="square e"  data-name="E4"  data-note="329.63">E4</button>
+    <button class="square f"  data-name="F4"  data-note="349.23">F4</button>
+    <button class="square g"  data-name="G4"  data-note="392.00">G4</button>
 
-    <button class="square ab" data-name="Ab4" data-note="415.30">Ab</button>
-    <button class="square b"  data-name="B4"  data-note="493.88">B</button>
-    <button class="square c"  data-name="C5"  data-note="523.25">C</button>
-    <button class="square c"  data-name="C5"  data-note="523.25">C</button>
+    <button class="square ab" data-name="Ab4" data-note="415.30">Ab4</button>
+    <button class="square b"  data-name="B4"  data-note="493.88">B4</button>
+    <button class="square c"  data-name="C5"  data-note="523.25">C5</button>
+    <button class="square db" data-name="Db6" data-note="1108.73">Db6</button>
   </div>
 
   <script>
@@ -172,11 +172,11 @@
 
       droneOsc1 = audioContext.createOscillator();
       droneOsc1.type = "sine";
-      droneOsc1.frequency.value = 130.81; // C
+      droneOsc1.frequency.value = 130.81;
 
       droneOsc2 = audioContext.createOscillator();
       droneOsc2.type = "sine";
-      droneOsc2.frequency.value = 196.00; // G
+      droneOsc2.frequency.value = 196.00;
 
       droneOsc1.connect(filter);
       droneOsc2.connect(filter);

@@ -3,7 +3,6 @@
 <head>
   <title>Andean Sound Square</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <style>
     body {
@@ -60,21 +59,21 @@
       transition: 0.08s;
     }
 
-   .back-button {
-	position: fixed;
-  	top: 18px;
-  	left: 18px;
-  	padding: 10px 14px;
-  	border-radius: 999px;
-  	text-decoration: none;
-  	font-family: system-ui, sans-serif;
-  	font-size: 14px;
-  	font-weight: 600;
-  	color: #222;
-  	background: rgba(255, 255, 255, 0.82);
-  	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  	backdrop-filter: blur(8px);
-  	z-index: 1000;
+    .back-button {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
     }
 
     .square.active {
@@ -83,15 +82,17 @@
       box-shadow: 0 0 24px rgba(190, 220, 220, 0.75);
     }
 
-    .a { background: #7b4f3a; }  /* terracotta */
-    .c { background: #5f6f72; }  /* stone blue-gray */
-    .d { background: #7a7f62; }  /* mountain grass */
-    .e { background: #b28a58; }  /* sunlit clay */
-    .g { background: #4f6f5f; }  /* alpine green */
+    .a { background: #7b4f3a; }
+    .c { background: #5f6f72; }
+    .d { background: #7a7f62; }
+    .e { background: #b28a58; }
+    .g { background: #4f6f5f; }
   </style>
 </head>
 
 <body>
+
+  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <h1>Andean Square</h1>
 
@@ -99,25 +100,25 @@
   <div id="status">Tap Start Audio</div>
 
   <div class="grid">
-    <button class="square a" data-name="A3" data-note="220.00">A</button>
-    <button class="square c" data-name="C4" data-note="261.63">C</button>
-    <button class="square d" data-name="D4" data-note="293.66">D</button>
-    <button class="square e" data-name="E4" data-note="329.63">E</button>
+    <button class="square a" data-name="A3" data-note="220.00">A3</button>
+    <button class="square c" data-name="C4" data-note="261.63">C4</button>
+    <button class="square d" data-name="D4" data-note="293.66">D4</button>
+    <button class="square e" data-name="E4" data-note="329.63">E4</button>
 
-    <button class="square g" data-name="G4" data-note="392.00">G</button>
-    <button class="square a" data-name="A4" data-note="440.00">A</button>
-    <button class="square c" data-name="C5" data-note="523.25">C</button>
-    <button class="square d" data-name="D5" data-note="587.33">D</button>
+    <button class="square g" data-name="G4" data-note="392.00">G4</button>
+    <button class="square a" data-name="A4" data-note="440.00">A4</button>
+    <button class="square c" data-name="C5" data-note="523.25">C5</button>
+    <button class="square d" data-name="D5" data-note="587.33">D5</button>
 
-    <button class="square e" data-name="E5" data-note="659.25">E</button>
-    <button class="square g" data-name="G5" data-note="783.99">G</button>
-    <button class="square a" data-name="A5" data-note="880.00">A</button>
-    <button class="square c" data-name="C6" data-note="1046.50">C</button>
+    <button class="square e" data-name="E5" data-note="659.25">E5</button>
+    <button class="square g" data-name="G5" data-note="783.99">G5</button>
+    <button class="square a" data-name="A5" data-note="880.00">A5</button>
+    <button class="square c" data-name="C6" data-note="1046.50">C6</button>
 
-    <button class="square d" data-name="D6" data-note="1174.66">D</button>
-    <button class="square e" data-name="E6" data-note="1318.51">E</button>
-    <button class="square g" data-name="G6" data-note="1567.98">G</button>
-    <button class="square a" data-name="A5" data-note="880.00">A</button>
+    <button class="square d" data-name="D6" data-note="1174.66">D6</button>
+    <button class="square e" data-name="E6" data-note="1318.51">E6</button>
+    <button class="square g" data-name="G6" data-note="1567.98">G6</button>
+    <button class="square c" data-name="C6" data-note="1046.50">C6</button>
   </div>
 
   <script>
@@ -168,7 +169,7 @@
 
       droneOsc = audioContext.createOscillator();
       droneOsc.type = "sine";
-      droneOsc.frequency.value = 110.00; // low A
+      droneOsc.frequency.value = 110.00;
 
       droneOsc.connect(filter);
       filter.connect(droneGain);

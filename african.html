@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>African Sound Square</title>
+  <title>Celtic Sound Square</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #16140f;
-      color: #f4e7d3;
+      background: #101816;
+      color: #eef5ed;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -29,14 +28,14 @@
       margin: 10px 0;
       border: none;
       border-radius: 12px;
-      background: #c58a2a;
-      color: #16140f;
+      background: #b8c9a5;
+      color: #101816;
       cursor: pointer;
     }
 
     #status {
       margin-bottom: 10px;
-      color: #d4c3a1;
+      color: #bac8bc;
       font-size: 14px;
       height: 20px;
     }
@@ -55,74 +54,81 @@
       border-radius: 18px;
       font-size: clamp(15px, 3.5vmin, 26px);
       font-weight: bold;
-      color: #fff2dd;
+      color: #f4f7ed;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
       transition: 0.08s;
     }
 
-   .back-button {
-	position: fixed;
-  	top: 18px;
-  	left: 18px;
-  	padding: 10px 14px;
-  	border-radius: 999px;
-  	text-decoration: none;
-  	font-family: system-ui, sans-serif;
-  	font-size: 14px;
-  	font-weight: 600;
-  	color: #222;
-  	background: rgba(255, 255, 255, 0.82);
-  	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  	backdrop-filter: blur(8px);
-  	z-index: 1000;
+    .back-button {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
     }
 
     .square.active {
-      transform: scale(0.88);
-      filter: brightness(1.4);
-      box-shadow: 0 0 26px rgba(255, 180, 80, 0.8);
+      transform: scale(0.9);
+      filter: brightness(1.35);
+      box-shadow: 0 0 24px rgba(190, 220, 180, 0.75);
     }
 
-    .c { background: #8b3e2f; }  /* earth red */
-    .d { background: #a86f2f; }  /* clay orange */
-    .f { background: #8b7a3f; }  /* dry grass */
-    .g { background: #4f6f4f; }  /* forest */
-    .a { background: #6b4f2f; }  /* wood brown */
+    .d { background: #47624f; }
+    .e { background: #6f7f52; }
+    .f { background: #8b7651; }
+    .g { background: #4d6f75; }
+    .a { background: #5c6f91; }
+    .b { background: #7b6a8c; }
+    .c { background: #7a4f4f; }
   </style>
 </head>
 
 <body>
 
-  <h1>African Sound Square</h1>
+  <a class="back-button" href="index.html">← Back to Menu</a>
+
+  <h1>Celtic Dorian Square</h1>
 
   <button id="startButton">Start Audio</button>
   <div id="status">Tap Start Audio</div>
 
   <div class="grid">
-    <button class="square c" data-name="C3" data-note="130.81">C</button>
-    <button class="square d" data-name="D3" data-note="146.83">D</button>
-    <button class="square f" data-name="F3" data-note="174.61">F</button>
-    <button class="square g" data-name="G3" data-note="196.00">G</button>
+    <button class="square d" data-name="D3" data-note="146.83">D3</button>
+    <button class="square e" data-name="E3" data-note="164.81">E3</button>
+    <button class="square f" data-name="F3" data-note="174.61">F3</button>
+    <button class="square g" data-name="G3" data-note="196.00">G3</button>
 
-    <button class="square a" data-name="A3" data-note="220.00">A</button>
-    <button class="square c" data-name="C4" data-note="261.63">C</button>
-    <button class="square d" data-name="D4" data-note="293.66">D</button>
-    <button class="square f" data-name="F4" data-note="349.23">F</button>
+    <button class="square a" data-name="A3" data-note="220.00">A3</button>
+    <button class="square b" data-name="B3" data-note="246.94">B3</button>
+    <button class="square c" data-name="C4" data-note="261.63">C4</button>
+    <button class="square d" data-name="D4" data-note="293.66">D4</button>
 
-    <button class="square g" data-name="G4" data-note="392.00">G</button>
-    <button class="square a" data-name="A4" data-note="440.00">A</button>
-    <button class="square c" data-name="C5" data-note="523.25">C</button>
-    <button class="square d" data-name="D5" data-note="587.33">D</button>
+    <button class="square e" data-name="E4" data-note="329.63">E4</button>
+    <button class="square f" data-name="F4" data-note="349.23">F4</button>
+    <button class="square g" data-name="G4" data-note="392.00">G4</button>
+    <button class="square a" data-name="A4" data-note="440.00">A4</button>
 
-    <button class="square f" data-name="F5" data-note="698.46">F</button>
-    <button class="square g" data-name="G5" data-note="783.99">G</button>
-    <button class="square a" data-name="A5" data-note="880.00">A</button>
-    <button class="square c" data-name="C5" data-note="523.25">C</button>
+    <button class="square b" data-name="B4" data-note="493.88">B4</button>
+    <button class="square c" data-name="C5" data-note="523.25">C5</button>
+    <button class="square d" data-name="D5" data-note="587.33">D5</button>
+    <button class="square e" data-name="E5" data-note="659.25">E5</button>
   </div>
 
   <script>
     let audioContext;
     let currentFingerButton = null;
+    let droneOsc1 = null;
+    let droneOsc2 = null;
+    let droneGain = null;
 
     const startButton = document.getElementById("startButton");
     const statusText = document.getElementById("status");
@@ -144,12 +150,42 @@
       osc.start();
       osc.stop(audioContext.currentTime + 0.1);
 
+      startDrone();
+
       statusText.textContent = "Audio Ready";
       startButton.style.display = "none";
     }
 
     startButton.addEventListener("click", startAudio);
     startButton.addEventListener("touchend", startAudio);
+
+    function startDrone() {
+      const now = audioContext.currentTime;
+
+      droneGain = audioContext.createGain();
+      droneGain.gain.setValueAtTime(0.0001, now);
+      droneGain.gain.exponentialRampToValueAtTime(0.025, now + 1.2);
+
+      const filter = audioContext.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = 450;
+
+      droneOsc1 = audioContext.createOscillator();
+      droneOsc1.type = "sine";
+      droneOsc1.frequency.value = 146.83;
+
+      droneOsc2 = audioContext.createOscillator();
+      droneOsc2.type = "sine";
+      droneOsc2.frequency.value = 220.00;
+
+      droneOsc1.connect(filter);
+      droneOsc2.connect(filter);
+      filter.connect(droneGain);
+      droneGain.connect(audioContext.destination);
+
+      droneOsc1.start();
+      droneOsc2.start();
+    }
 
     function playNote(freq) {
       if (!audioContext) {
@@ -160,43 +196,42 @@
       const now = audioContext.currentTime;
 
       const gain = audioContext.createGain();
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.exponentialRampToValueAtTime(0.28, now + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.95);
 
-      const osc = audioContext.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(freq, now);
+      const osc1 = audioContext.createOscillator();
+      osc1.type = "triangle";
+      osc1.frequency.setValueAtTime(freq, now);
 
-      const click = audioContext.createOscillator();
-      click.type = "square";
-      click.frequency.setValueAtTime(freq * 4, now);
+      const osc2 = audioContext.createOscillator();
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(freq * 2, now);
 
-      const clickGain = audioContext.createGain();
-      clickGain.gain.setValueAtTime(0.08, now);
-      clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+      const osc2Gain = audioContext.createGain();
+      osc2Gain.gain.value = 0.1;
 
       const filter = audioContext.createBiquadFilter();
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(2000, now);
-      filter.frequency.exponentialRampToValueAtTime(700, now + 0.3);
+      filter.frequency.setValueAtTime(1800, now);
+      filter.frequency.exponentialRampToValueAtTime(650, now + 0.8);
 
-      osc.connect(filter);
-      click.connect(clickGain);
-      clickGain.connect(filter);
+      osc1.connect(filter);
+      osc2.connect(osc2Gain);
+      osc2Gain.connect(filter);
       filter.connect(gain);
       gain.connect(audioContext.destination);
 
-      osc.start(now);
-      click.start(now);
+      osc1.start(now);
+      osc2.start(now);
 
-      osc.stop(now + 0.4);
-      click.stop(now + 0.05);
+      osc1.stop(now + 0.95);
+      osc2.stop(now + 0.95);
     }
 
     function flashButton(button) {
       button.classList.add("active");
-      setTimeout(() => button.classList.remove("active"), 100);
+      setTimeout(() => button.classList.remove("active"), 140);
     }
 
     function triggerButton(button) {
