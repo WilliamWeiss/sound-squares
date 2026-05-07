@@ -1,276 +1,207 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Blues Sound Square</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #101114;
-      color: #f1eee8;
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, sans-serif;
+      background: #1b1620;
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 0;
-      height: 100vh;
-      overflow: hidden;
-      touch-action: none;
-      user-select: none;
+      text-align: center;
     }
 
-    h1 { margin: 10px 0; font-weight: 500; }
-
-    #startButton {
-      font-size: 18px;
-      padding: 12px 20px;
-      margin: 10px 0;
-      border: none;
-      border-radius: 12px;
-      background: #b8a26a;
-      color: #101114;
-      cursor: pointer;
-    }
-
-    #status {
-      margin-bottom: 10px;
-      color: #bbb3a5;
+    .back-button {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
       font-size: 14px;
-      height: 20px;
+      font-weight: 600;
+      color: #222;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
     }
 
-    .grid {
+    h1 {
+      margin-bottom: 8px;
+      letter-spacing: 0.08em;
+    }
+
+    p {
+      margin-top: 0;
+      color: #d6c9dd;
+    }
+
+    .square-grid {
       display: grid;
-      width: min(90vmin, 420px);
-      height: min(90vmin, 420px);
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(4, 1fr);
-      gap: 2%;
+      grid-template-columns: repeat(3, 90px);
+      gap: 14px;
+      margin-top: 28px;
     }
 
-    .square {
+    .sound-square {
+      width: 90px;
+      height: 90px;
       border: none;
       border-radius: 18px;
-      font-size: clamp(15px, 3.5vmin, 26px);
-      font-weight: bold;
-      color: #f8f4ec;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-      transition: 0.08s;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+      transition: transform 0.12s ease, filter 0.12s ease;
     }
 
-   .back-button {
-	position: fixed;
-  	top: 18px;
-  	left: 18px;
-  	padding: 10px 14px;
-  	border-radius: 999px;
-  	text-decoration: none;
-  	font-family: system-ui, sans-serif;
-  	font-size: 14px;
-  	font-weight: 600;
-  	color: #222;
-  	background: rgba(255, 255, 255, 0.82);
-  	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-  	backdrop-filter: blur(8px);
-  	z-index: 1000;
+    .sound-square:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.15);
     }
 
-    .square.active {
-      transform: scale(0.9);
-      filter: brightness(1.35);
-      box-shadow: 0 0 24px rgba(185, 170, 125, 0.75);
+    .sound-square.playing {
+      transform: scale(1.08);
+      filter: brightness(1.45);
+      box-shadow: 0 0 28px currentColor;
     }
 
-    .c  { background: #3f4e6f; }  /* smoky blue */
-    .eb { background: #5f506f; }  /* dusky violet */
-    .f  { background: #5f6f58; }  /* olive green */
-    .gb { background: #7a6f4f; }  /* brass */
-    .g  { background: #6f4b3e; }  /* worn leather */
-    .bb { background: #4f5f63; }  /* blue-gray */
+    .controls {
+      margin-top: 28px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .control-button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      background: white;
+      color: #1b1620;
+    }
   </style>
 </head>
 
 <body>
+  <a class="back-button" href="index.html">← Back to Menu</a>
 
-  <h1>Blues Square</h1>
+  <h1>BLUES</h1>
+  <p>C Blues Square — final note resolves to high B♭</p>
 
-  <button id="startButton">Start Audio</button>
-  <div id="status">Tap Start Audio</div>
+  <div class="square-grid">
+    <button class="sound-square" style="background:#243b8f;" data-note="C4">C</button>
+    <button class="sound-square" style="background:#4b2a88;" data-note="Eb4">E♭</button>
+    <button class="sound-square" style="background:#6e2c7f;" data-note="F4">F</button>
 
-  <div class="grid">
-    <button class="square c"  data-name="C3"  data-note="130.81">C</button>
-    <button class="square eb" data-name="Eb3" data-note="155.56">Eb</button>
-    <button class="square f"  data-name="F3"  data-note="174.61">F</button>
-    <button class="square gb" data-name="Gb3" data-note="185.00">Gb</button>
+    <button class="sound-square" style="background:#8a2d63;" data-note="Gb4">G♭</button>
+    <button class="sound-square" style="background:#a5423f;" data-note="G4">G</button>
+    <button class="sound-square" style="background:#b46a31;" data-note="Bb4">B♭</button>
 
-    <button class="square g"  data-name="G3"  data-note="196.00">G</button>
-    <button class="square bb" data-name="Bb3" data-note="233.08">Bb</button>
-    <button class="square c"  data-name="C4"  data-note="261.63">C</button>
-    <button class="square eb" data-name="Eb4" data-note="311.13">Eb</button>
+    <button class="sound-square" style="background:#d49a3a;" data-note="Bb5">High B♭</button>
+  </div>
 
-    <button class="square f"  data-name="F4"  data-note="349.23">F</button>
-    <button class="square gb" data-name="Gb4" data-note="369.99">Gb</button>
-    <button class="square g"  data-name="G4"  data-note="392.00">G</button>
-    <button class="square bb" data-name="Bb4" data-note="466.16">Bb</button>
-
-    <button class="square c"  data-name="C5"  data-note="523.25">C</button>
-    <button class="square eb" data-name="Eb5" data-note="622.25">Eb</button>
-    <button class="square f"  data-name="F5"  data-note="698.46">F</button>
-    <button class="square gb"  data-name="Gb5"  data-note="523.25">C</button>
+  <div class="controls">
+    <button class="control-button" onclick="playScale()">Play Scale</button>
+    <button class="control-button" onclick="stopSound()">Stop</button>
   </div>
 
   <script>
     let audioContext;
-    let currentFingerButton = null;
-    let droneOsc1 = null;
-    let droneOsc2 = null;
-    let droneGain = null;
+    let currentOscillator = null;
 
-    const startButton = document.getElementById("startButton");
-    const statusText = document.getElementById("status");
+    const noteFrequencies = {
+      C4: 261.63,
+      Eb4: 311.13,
+      F4: 349.23,
+      Gb4: 369.99,
+      G4: 392.00,
+      Bb4: 466.16,
+      Bb5: 932.33
+    };
 
-    function startAudio() {
-      if (audioContext) return;
+    const bluesNotes = [
+      "C4",
+      "Eb4",
+      "F4",
+      "Gb4",
+      "G4",
+      "Bb4",
+      "Bb5"
+    ];
 
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-
-      osc.frequency.value = 440;
-      gain.gain.value = 0.04;
-
-      osc.connect(gain);
-      gain.connect(audioContext.destination);
-
-      osc.start();
-      osc.stop(audioContext.currentTime + 0.1);
-
-      startDrone();
-
-      statusText.textContent = "Audio Ready";
-      startButton.style.display = "none";
-    }
-
-    startButton.addEventListener("click", startAudio);
-    startButton.addEventListener("touchend", startAudio);
-
-    function startDrone() {
-      const now = audioContext.currentTime;
-
-      droneGain = audioContext.createGain();
-      droneGain.gain.setValueAtTime(0.0001, now);
-      droneGain.gain.exponentialRampToValueAtTime(0.022, now + 1.2);
-
-      const filter = audioContext.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.value = 420;
-
-      droneOsc1 = audioContext.createOscillator();
-      droneOsc1.type = "sine";
-      droneOsc1.frequency.value = 130.81; // C
-
-      droneOsc2 = audioContext.createOscillator();
-      droneOsc2.type = "sine";
-      droneOsc2.frequency.value = 196.00; // G
-
-      droneOsc1.connect(filter);
-      droneOsc2.connect(filter);
-      filter.connect(droneGain);
-      droneGain.connect(audioContext.destination);
-
-      droneOsc1.start();
-      droneOsc2.start();
-    }
-
-    function playNote(freq) {
+    function getAudioContext() {
       if (!audioContext) {
-        statusText.textContent = "Tap Start Audio first";
-        return;
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
       }
-
-      const now = audioContext.currentTime;
-
-      const gain = audioContext.createGain();
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.24, now + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.05);
-
-      const osc1 = audioContext.createOscillator();
-      osc1.type = "triangle";
-      osc1.frequency.setValueAtTime(freq, now);
-
-      const osc2 = audioContext.createOscillator();
-      osc2.type = "sawtooth";
-      osc2.frequency.setValueAtTime(freq * 2, now);
-
-      const osc2Gain = audioContext.createGain();
-      osc2Gain.gain.value = 0.06;
-
-      const filter = audioContext.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(1350, now);
-      filter.frequency.exponentialRampToValueAtTime(520, now + 0.9);
-
-      osc1.connect(filter);
-      osc2.connect(osc2Gain);
-      osc2Gain.connect(filter);
-      filter.connect(gain);
-      gain.connect(audioContext.destination);
-
-      osc1.start(now);
-      osc2.start(now);
-
-      osc1.stop(now + 1.05);
-      osc2.stop(now + 1.05);
+      return audioContext;
     }
 
-    function flashButton(button) {
-      button.classList.add("active");
-      setTimeout(() => button.classList.remove("active"), 140);
-    }
+    function playNote(note, duration = 0.55) {
+      const context = getAudioContext();
+      const frequency = noteFrequencies[note];
 
-    function triggerButton(button) {
-      if (!button || button === currentFingerButton) return;
+      if (!frequency) return;
 
-      currentFingerButton = button;
-      playNote(parseFloat(button.dataset.note));
-      statusText.textContent = button.dataset.name;
-      flashButton(button);
-    }
+      stopSound();
 
-    function buttonFromPoint(x, y) {
-      const element = document.elementFromPoint(x, y);
-      if (element && element.classList.contains("square")) {
-        return element;
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+
+      oscillator.type = "sawtooth";
+      oscillator.frequency.setValueAtTime(frequency, context.currentTime);
+
+      gainNode.gain.setValueAtTime(0.0001, context.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.22, context.currentTime + 0.03);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+
+      oscillator.start();
+      oscillator.stop(context.currentTime + duration);
+
+      currentOscillator = oscillator;
+
+      const square = document.querySelector(`[data-note="${note}"]`);
+      if (square) {
+        square.classList.add("playing");
+        setTimeout(() => square.classList.remove("playing"), duration * 1000);
       }
-      return null;
     }
 
-    document.querySelectorAll(".square").forEach(button => {
-      button.addEventListener("pointerdown", event => {
-        event.preventDefault();
-        triggerButton(button);
+    function stopSound() {
+      if (currentOscillator) {
+        try {
+          currentOscillator.stop();
+        } catch (e) {}
+        currentOscillator = null;
+      }
+    }
+
+    function playScale() {
+      bluesNotes.forEach((note, index) => {
+        setTimeout(() => {
+          playNote(note, 0.45);
+        }, index * 500);
+      });
+    }
+
+    document.querySelectorAll(".sound-square").forEach(square => {
+      square.addEventListener("click", () => {
+        playNote(square.dataset.note);
       });
     });
-
-    document.addEventListener("pointermove", event => {
-      if (event.buttons !== 1 && event.pointerType === "mouse") return;
-
-      const button = buttonFromPoint(event.clientX, event.clientY);
-      if (button) triggerButton(button);
-    });
-
-    document.addEventListener("pointerup", () => {
-      currentFingerButton = null;
-    });
-
-    document.addEventListener("pointercancel", () => {
-      currentFingerButton = null;
-    });
   </script>
-
 </body>
 </html>
