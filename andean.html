@@ -3,6 +3,7 @@
 <head>
   <title>Andean Sound Square</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <style>
     body {
@@ -57,6 +58,23 @@
       color: #f7f1e8;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
       transition: 0.08s;
+    }
+
+   .back-button {
+	position: fixed;
+  	top: 18px;
+  	left: 18px;
+  	padding: 10px 14px;
+  	border-radius: 999px;
+  	text-decoration: none;
+  	font-family: system-ui, sans-serif;
+  	font-size: 14px;
+  	font-weight: 600;
+  	color: #222;
+  	background: rgba(255, 255, 255, 0.82);
+  	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  	backdrop-filter: blur(8px);
+  	z-index: 1000;
     }
 
     .square.active {
