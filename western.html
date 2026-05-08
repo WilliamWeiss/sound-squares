@@ -5,112 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-
     body {
       font-family: Arial, sans-serif;
       background: #111;
       color: white;
-
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-
       margin: 0;
       height: 100vh;
-
       overflow: hidden;
-
       touch-action: none;
       user-select: none;
     }
 
-    h1 {
-      margin: 10px 0;
-    }
+    h1 { margin: 10px 0; }
 
     #startButton {
       font-size: 18px;
-
       padding: 12px 20px;
       margin: 10px 0;
-
       border: none;
       border-radius: 12px;
-
       background: white;
       color: black;
-
       cursor: pointer;
     }
 
     #status {
       margin-bottom: 10px;
-
       color: #ccc;
-
       font-size: 18px;
-      font-weight: 700;
-
-      letter-spacing: 0.04em;
-
       height: 26px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
     .back-button {
       position: fixed;
-
       top: 18px;
       left: 18px;
-
       padding: 10px 14px;
-
       border-radius: 999px;
-
       text-decoration: none;
-
       font-family: system-ui, sans-serif;
       font-size: 14px;
       font-weight: 600;
-
       color: #222;
-
       background: rgba(255,255,255,0.82);
-
       box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-
       backdrop-filter: blur(8px);
-
       z-index: 1000;
     }
 
     .grid {
       display: grid;
-
       width: min(92vmin, 520px);
       height: min(92vmin, 760px);
-
       grid-template-columns: repeat(8, 1fr);
-
       grid-auto-rows: 1fr;
-
       gap: 2%;
     }
 
     .square {
       border: none;
-
       border-radius: 18px;
-
       font-size: clamp(13px, 3.2vmin, 22px);
       font-weight: bold;
-
       color: white;
-
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-
       transition: 0.08s;
-
       cursor: pointer;
     }
 
@@ -120,853 +85,275 @@
 
     .flat {
       grid-column: span 1;
-
       font-size: clamp(10px, 2.2vmin, 16px);
-
       border-radius: 14px;
     }
 
     .square.active {
       transform: scale(0.9);
-
       filter: brightness(1.45);
-
       box-shadow: 0 0 26px rgba(255,255,255,0.8);
     }
 
-    .c {
-      background: #ff6b6b;
-    }
+    .c  { background: #ff6b6b; }
+    .db { background: linear-gradient(135deg, #ff6b6b, #f7b267); }
+    .d  { background: #f7b267; }
+    .eb { background: linear-gradient(135deg, #f7b267, #ffd93d); color: #222; }
+    .e  { background: #ffd93d; color: #222; }
 
-    .db {
-      background:
-        linear-gradient(
-          135deg,
-          #ff6b6b,
-          #f7b267
-        );
-    }
-
-    .d {
-      background: #f7b267;
-    }
-
-    .eb {
-      background:
-        linear-gradient(
-          135deg,
-          #f7b267,
-          #ffd93d
-        );
-
-      color: #222;
-    }
-
-    .e {
-      background: #ffd93d;
-
-      color: #222;
-    }
-
-    .f {
-      background: #6bcb77;
-    }
-
-    .gb {
-      background:
-        linear-gradient(
-          135deg,
-          #6bcb77,
-          #4d96ff
-        );
-    }
-
-    .g {
-      background: #4d96ff;
-    }
-
-    .ab {
-      background:
-        linear-gradient(
-          135deg,
-          #4d96ff,
-          #9d4edd
-        );
-    }
-
-    .a {
-      background: #9d4edd;
-    }
-
-    .bb {
-      background:
-        linear-gradient(
-          135deg,
-          #9d4edd,
-          #ff8fab
-        );
-    }
-
-    .b {
-      background: #ff8fab;
-    }
-
+    .f  { background: #6bcb77; }
+    .gb { background: linear-gradient(135deg, #6bcb77, #4d96ff); }
+    .g  { background: #4d96ff; }
+    .ab { background: linear-gradient(135deg, #4d96ff, #9d4edd); }
+    .a  { background: #9d4edd; }
+    .bb { background: linear-gradient(135deg, #9d4edd, #ff8fab); }
+    .b  { background: #ff8fab; }
   </style>
 </head>
 
 <body>
 
-  <a
-    class="back-button"
-    href="index.html">
-    ← Back to Menu
-  </a>
+  <a class="back-button" href="index.html">← Back to Menu</a>
 
   <h1>Western Sound Square</h1>
 
-  <button id="startButton">
-    Start Audio
-  </button>
-
-  <div id="status">
-    Tap Start Audio
-  </div>
+  <button id="startButton">Start Audio</button>
+  <div id="status">Tap Start Audio</div>
 
   <div class="grid">
+    <button class="square natural c"  data-name="C3"  data-note="130.81" data-pc="C"  data-midi="48">C3</button>
+    <button class="square flat db"    data-name="Db3" data-note="138.59" data-pc="Db" data-midi="49">Db3</button>
+    <button class="square natural d"  data-name="D3"  data-note="146.83" data-pc="D"  data-midi="50">D3</button>
+    <button class="square flat eb"    data-name="Eb3" data-note="155.56" data-pc="Eb" data-midi="51">Eb3</button>
+    <button class="square natural e"  data-name="E3"  data-note="164.81" data-pc="E"  data-midi="52">E3</button>
 
-    <button
-      class="square natural c"
-      data-name="C3"
-      data-note="130.81"
-      data-pc="C"
-      data-midi="48">
-      C3
-    </button>
+    <button class="square natural f"  data-name="F3"  data-note="174.61" data-pc="F"  data-midi="53">F3</button>
+    <button class="square flat gb"    data-name="Gb3" data-note="185.00" data-pc="Gb" data-midi="54">Gb3</button>
+    <button class="square natural g"  data-name="G3"  data-note="196.00" data-pc="G"  data-midi="55">G3</button>
+    <button class="square flat ab"    data-name="Ab3" data-note="207.65" data-pc="Ab" data-midi="56">Ab3</button>
+    <button class="square natural a"  data-name="A3"  data-note="220.00" data-pc="A"  data-midi="57">A3</button>
 
-    <button
-      class="square flat db"
-      data-name="Db3"
-      data-note="138.59"
-      data-pc="Db"
-      data-midi="49">
-      Db3
-    </button>
+    <button class="square flat bb"    data-name="Bb3" data-note="233.08" data-pc="Bb" data-midi="58">Bb3</button>
+    <button class="square natural b"  data-name="B3"  data-note="246.94" data-pc="B"  data-midi="59">B3</button>
+    <button class="square natural c"  data-name="C4"  data-note="261.63" data-pc="C"  data-midi="60">C4</button>
+    <button class="square flat db"    data-name="Db4" data-note="277.18" data-pc="Db" data-midi="61">Db4</button>
+    <button class="square natural d"  data-name="D4"  data-note="293.66" data-pc="D"  data-midi="62">D4</button>
 
-    <button
-      class="square natural d"
-      data-name="D3"
-      data-note="146.83"
-      data-pc="D"
-      data-midi="50">
-      D3
-    </button>
+    <button class="square flat eb"    data-name="Eb4" data-note="311.13" data-pc="Eb" data-midi="63">Eb4</button>
+    <button class="square natural e"  data-name="E4"  data-note="329.63" data-pc="E"  data-midi="64">E4</button>
+    <button class="square natural f"  data-name="F4"  data-note="349.23" data-pc="F"  data-midi="65">F4</button>
+    <button class="square flat gb"    data-name="Gb4" data-note="369.99" data-pc="Gb" data-midi="66">Gb4</button>
+    <button class="square natural g"  data-name="G4"  data-note="392.00" data-pc="G"  data-midi="67">G4</button>
 
-    <button
-      class="square flat eb"
-      data-name="Eb3"
-      data-note="155.56"
-      data-pc="Eb"
-      data-midi="51">
-      Eb3
-    </button>
-
-    <button
-      class="square natural e"
-      data-name="E3"
-      data-note="164.81"
-      data-pc="E"
-      data-midi="52">
-      E3
-    </button>
-
-    <button
-      class="square natural f"
-      data-name="F3"
-      data-note="174.61"
-      data-pc="F"
-      data-midi="53">
-      F3
-    </button>
-
-    <button
-      class="square flat gb"
-      data-name="Gb3"
-      data-note="185.00"
-      data-pc="Gb"
-      data-midi="54">
-      Gb3
-    </button>
-
-    <button
-      class="square natural g"
-      data-name="G3"
-      data-note="196.00"
-      data-pc="G"
-      data-midi="55">
-      G3
-    </button>
-
-    <button
-      class="square flat ab"
-      data-name="Ab3"
-      data-note="207.65"
-      data-pc="Ab"
-      data-midi="56">
-      Ab3
-    </button>
-
-    <button
-      class="square natural a"
-      data-name="A3"
-      data-note="220.00"
-      data-pc="A"
-      data-midi="57">
-      A3
-    </button>
-
-    <button
-      class="square flat bb"
-      data-name="Bb3"
-      data-note="233.08"
-      data-pc="Bb"
-      data-midi="58">
-      Bb3
-    </button>
-
-    <button
-      class="square natural b"
-      data-name="B3"
-      data-note="246.94"
-      data-pc="B"
-      data-midi="59">
-      B3
-    </button>
-
-    <button
-      class="square natural c"
-      data-name="C4"
-      data-note="261.63"
-      data-pc="C"
-      data-midi="60">
-      C4
-    </button>
-
-    <button
-      class="square flat db"
-      data-name="Db4"
-      data-note="277.18"
-      data-pc="Db"
-      data-midi="61">
-      Db4
-    </button>
-
-    <button
-      class="square natural d"
-      data-name="D4"
-      data-note="293.66"
-      data-pc="D"
-      data-midi="62">
-      D4
-    </button>
-
-    <button
-      class="square flat eb"
-      data-name="Eb4"
-      data-note="311.13"
-      data-pc="Eb"
-      data-midi="63">
-      Eb4
-    </button>
-
-    <button
-      class="square natural e"
-      data-name="E4"
-      data-note="329.63"
-      data-pc="E"
-      data-midi="64">
-      E4
-    </button>
-
-    <button
-      class="square natural f"
-      data-name="F4"
-      data-note="349.23"
-      data-pc="F"
-      data-midi="65">
-      F4
-    </button>
-
-    <button
-      class="square flat gb"
-      data-name="Gb4"
-      data-note="369.99"
-      data-pc="Gb"
-      data-midi="66">
-      Gb4
-    </button>
-
-    <button
-      class="square natural g"
-      data-name="G4"
-      data-note="392.00"
-      data-pc="G"
-      data-midi="67">
-      G4
-    </button>
-
-    <button
-      class="square flat ab"
-      data-name="Ab4"
-      data-note="415.30"
-      data-pc="Ab"
-      data-midi="68">
-      Ab4
-    </button>
-
-    <button
-      class="square natural a"
-      data-name="A4"
-      data-note="440.00"
-      data-pc="A"
-      data-midi="69">
-      A4
-    </button>
-
-    <button
-      class="square flat bb"
-      data-name="Bb4"
-      data-note="466.16"
-      data-pc="Bb"
-      data-midi="70">
-      Bb4
-    </button>
-
-    <button
-      class="square natural b"
-      data-name="B4"
-      data-note="493.88"
-      data-pc="B"
-      data-midi="71">
-      B4
-    </button>
-
-    <button
-      class="square natural c"
-      data-name="C5"
-      data-note="523.25"
-      data-pc="C"
-      data-midi="72">
-      C5
-    </button>
-
+    <button class="square flat ab"    data-name="Ab4" data-note="415.30" data-pc="Ab" data-midi="68">Ab4</button>
+    <button class="square natural a"  data-name="A4"  data-note="440.00" data-pc="A"  data-midi="69">A4</button>
+    <button class="square flat bb"    data-name="Bb4" data-note="466.16" data-pc="Bb" data-midi="70">Bb4</button>
+    <button class="square natural b"  data-name="B4"  data-note="493.88" data-pc="B"  data-midi="71">B4</button>
+    <button class="square natural c"  data-name="C5"  data-note="523.25" data-pc="C"  data-midi="72">C5</button>
   </div>
 
   <script>
-
     let audioContext;
 
-    const startButton =
-      document.getElementById(
-        "startButton"
-      );
-
-    const statusText =
-      document.getElementById(
-        "status"
-      );
-
-    const activeNotes =
-      new Map();
+    const startButton = document.getElementById("startButton");
+    const statusText = document.getElementById("status");
+    const activeNotes = new Map();
 
     const pcToNumber = {
-
-      C: 0,
-      Db: 1,
-      D: 2,
-      Eb: 3,
-      E: 4,
-      F: 5,
-      Gb: 6,
-      G: 7,
-      Ab: 8,
-      A: 9,
-      Bb: 10,
-      B: 11
+      C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5,
+      Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11
     };
 
     function startAudio() {
-
       if (audioContext) return;
 
-      audioContext =
-        new (
-          window.AudioContext ||
-          window.webkitAudioContext
-        )();
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-      const osc =
-        audioContext.createOscillator();
-
-      const gain =
-        audioContext.createGain();
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
 
       osc.frequency.value = 440;
-
       gain.gain.value = 0.05;
 
       osc.connect(gain);
-
-      gain.connect(
-        audioContext.destination
-      );
+      gain.connect(audioContext.destination);
 
       osc.start();
+      osc.stop(audioContext.currentTime + 0.1);
 
-      osc.stop(
-        audioContext.currentTime + 0.1
-      );
-
-      statusText.textContent =
-        "Audio Ready";
-
-      startButton.style.display =
-        "none";
+      statusText.textContent = "Audio Ready";
+      startButton.style.display = "none";
     }
 
-    startButton.addEventListener(
-      "click",
-      startAudio
-    );
+    startButton.addEventListener("click", startAudio);
+    startButton.addEventListener("touchend", startAudio);
 
-    startButton.addEventListener(
-      "touchend",
-      startAudio
-    );
-
-    function startSustainedNote(
-      button,
-      pointerId
-    ) {
-
+    function startSustainedNote(button, pointerId) {
       if (!audioContext) {
-
-        statusText.textContent =
-          "Tap Start Audio first";
-
+        statusText.textContent = "Tap Start Audio first";
         return;
       }
 
-      if (
-        activeNotes.has(pointerId)
-      ) return;
+      if (activeNotes.has(pointerId)) return;
 
-      const now =
-        audioContext.currentTime;
+      const now = audioContext.currentTime;
+      const freq = parseFloat(button.dataset.note);
 
-      const freq =
-        parseFloat(
-          button.dataset.note
-        );
+      const gain = audioContext.createGain();
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.18, now + 0.025);
 
-      const gain =
-        audioContext.createGain();
-
-      gain.gain.setValueAtTime(
-        0.0001,
-        now
-      );
-
-      gain.gain.exponentialRampToValueAtTime(
-        0.18,
-        now + 0.025
-      );
-
-      const osc =
-        audioContext.createOscillator();
-
+      const osc = audioContext.createOscillator();
       osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now);
 
-      osc.frequency.setValueAtTime(
-        freq,
-        now
-      );
-
-      const filter =
-        audioContext.createBiquadFilter();
-
+      const filter = audioContext.createBiquadFilter();
       filter.type = "lowpass";
-
-      filter.frequency.setValueAtTime(
-        1500,
-        now
-      );
+      filter.frequency.setValueAtTime(1500, now);
 
       osc.connect(filter);
-
       filter.connect(gain);
-
-      gain.connect(
-        audioContext.destination
-      );
+      gain.connect(audioContext.destination);
 
       osc.start(now);
 
-      activeNotes.set(
-        pointerId,
-        {
-          button,
-          osc,
-          gain,
+      activeNotes.set(pointerId, {
+        button,
+        osc,
+        gain,
+        pc: button.dataset.pc,
+        name: button.dataset.name,
+        midi: parseInt(button.dataset.midi, 10)
+      });
 
-          pc:
-            button.dataset.pc,
-
-          name:
-            button.dataset.name,
-
-          midi:
-            parseInt(
-              button.dataset.midi,
-              10
-            )
-        }
-      );
-
-      button.classList.add(
-        "active"
-      );
-
+      button.classList.add("active");
       updateStatus();
     }
 
-    function stopSustainedNote(
-      pointerId
-    ) {
+    function stopSustainedNote(pointerId) {
+      const note = activeNotes.get(pointerId);
+      if (!note || !audioContext) return;
 
-      const note =
-        activeNotes.get(pointerId);
+      const now = audioContext.currentTime;
 
-      if (
-        !note ||
-        !audioContext
-      ) return;
+      note.gain.gain.cancelScheduledValues(now);
+      note.gain.gain.setValueAtTime(note.gain.gain.value, now);
+      note.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
 
-      const now =
-        audioContext.currentTime;
+      note.osc.stop(now + 0.1);
+      note.button.classList.remove("active");
 
-      note.gain.gain.cancelScheduledValues(
-        now
-      );
-
-      note.gain.gain.setValueAtTime(
-        note.gain.gain.value,
-        now
-      );
-
-      note.gain.gain.exponentialRampToValueAtTime(
-        0.0001,
-        now + 0.08
-      );
-
-      note.osc.stop(
-        now + 0.1
-      );
-
-      note.button.classList.remove(
-        "active"
-      );
-
-      activeNotes.delete(
-        pointerId
-      );
-
+      activeNotes.delete(pointerId);
       updateStatus();
     }
 
     function updateStatus() {
+      const notes = Array.from(activeNotes.values())
+        .sort((a, b) => a.midi - b.midi);
 
-      const notes =
-        Array.from(
-          activeNotes.values()
-        ).sort(
-          (a, b) =>
-            a.midi - b.midi
-        );
-
-      if (
-        notes.length === 0
-      ) {
-
-        statusText.textContent =
-          " ";
-
+      if (notes.length === 0) {
+        statusText.textContent = " ";
         return;
       }
 
-      if (
-        notes.length >= 3
-      ) {
-
-        statusText.textContent =
-          nameChord(notes);
-
+      if (notes.length >= 3) {
+        statusText.textContent = nameChord(notes) + " Chord";
       } else {
-
-        statusText.textContent =
-          notes.map(
-            n => n.name
-          ).join(" – ");
+        statusText.textContent = notes.map(n => n.name).join(" – ");
       }
     }
 
     function nameChord(notes) {
-
       const pcs = [];
-
-      const pcSeen =
-        new Set();
+      const pcSeen = new Set();
 
       notes.forEach(note => {
-
-        if (
-          !pcSeen.has(
-            note.pc
-          )
-        ) {
-
-          pcs.push(
-            note.pc
-          );
-
-          pcSeen.add(
-            note.pc
-          );
+        if (!pcSeen.has(note.pc)) {
+          pcs.push(note.pc);
+          pcSeen.add(note.pc);
         }
       });
 
-      const numbers =
-        pcs.map(
-          pc =>
-            pcToNumber[pc]
-        );
+      const numbers = pcs.map(pc => pcToNumber[pc]);
+      const lowestPc = notes[0].pc;
 
-      const lowestPc =
-        notes[0].pc;
+      for (const rootPc of pcs) {
+        const root = pcToNumber[rootPc];
 
-      for (
-        const rootPc of pcs
-      ) {
+        const has = interval =>
+          numbers.includes((root + interval) % 12);
 
-        const root =
-          pcToNumber[rootPc];
+        const majorTriad = has(4) && has(7);
+        const minorTriad = has(3) && has(7);
+        const diminishedTriad = has(3) && has(6);
 
-        const has =
-          interval =>
-            numbers.includes(
-              (
-                root +
-                interval
-              ) % 12
-            );
+        const major7 = has(11);
+        const dominant7 = has(10);
 
-        const majorTriad =
-          has(4) &&
-          has(7);
+        if (majorTriad) {
+          const inversion = getInversion(rootPc, lowestPc);
 
-        const minorTriad =
-          has(3) &&
-          has(7);
+          if (major7) return rootPc + inversion + "7";
+          if (dominant7) return rootPc + inversion + "D7";
 
-        const diminishedTriad =
-          has(3) &&
-          has(6);
-
-        const major7 =
-          has(11);
-
-        const dominant7 =
-          has(10);
-
-        if (
-          majorTriad
-        ) {
-
-          const inversion =
-            getInversion(
-              rootPc,
-              lowestPc
-            );
-
-          if (major7)
-            return (
-              rootPc +
-              inversion +
-              "7"
-            );
-
-          if (dominant7)
-            return (
-              rootPc +
-              inversion +
-              "D7"
-            );
-
-          return (
-            rootPc +
-            inversion
-          );
+          return rootPc + inversion;
         }
 
-        if (
-          minorTriad
-        ) {
-
-          return (
-            rootPc +
-            "m" +
-            getInversion(
-              rootPc,
-              lowestPc
-            )
-          );
+        if (minorTriad) {
+          return rootPc + "m" + getInversion(rootPc, lowestPc);
         }
 
-        if (
-          diminishedTriad
-        ) {
-
-          return (
-            rootPc +
-            "dim" +
-            getInversion(
-              rootPc,
-              lowestPc
-            )
-          );
+        if (diminishedTriad) {
+          return rootPc + "dim" + getInversion(rootPc, lowestPc);
         }
       }
 
-      return pcs.join(
-        " – "
-      );
+      return pcs.join(" – ");
     }
 
-    function getInversion(
-      rootPc,
-      lowestPc
-    ) {
+    function getInversion(rootPc, lowestPc) {
+      const root = pcToNumber[rootPc];
+      const lowest = pcToNumber[lowestPc];
+      const interval = (lowest - root + 12) % 12;
 
-      const root =
-        pcToNumber[rootPc];
-
-      const lowest =
-        pcToNumber[lowestPc];
-
-      const interval =
-        (
-          lowest -
-          root +
-          12
-        ) % 12;
-
-      if (
-        interval === 0
-      ) return "1";
-
-      if (
-        interval === 3 ||
-        interval === 4
-      ) return "2";
-
-      if (
-        interval === 6 ||
-        interval === 7
-      ) return "3";
-
-      if (
-        interval === 10 ||
-        interval === 11
-      ) return "4";
+      if (interval === 0) return "1";
+      if (interval === 3 || interval === 4) return "2";
+      if (interval === 6 || interval === 7) return "3";
+      if (interval === 10 || interval === 11) return "4";
 
       return "1";
     }
 
-    document
-      .querySelectorAll(
-        ".square"
-      )
-      .forEach(button => {
+    document.querySelectorAll(".square").forEach(button => {
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
 
-        button.addEventListener(
-          "pointerdown",
-          event => {
+        if (!audioContext) {
+          statusText.textContent = "Tap Start Audio first";
+          return;
+        }
 
-            event.preventDefault();
-
-            if (
-              !audioContext
-            ) {
-
-              statusText.textContent =
-                "Tap Start Audio first";
-
-              return;
-            }
-
-            button.setPointerCapture(
-              event.pointerId
-            );
-
-            startSustainedNote(
-              button,
-              event.pointerId
-            );
-          }
-        );
-
-        button.addEventListener(
-          "pointerup",
-          event => {
-
-            event.preventDefault();
-
-            stopSustainedNote(
-              event.pointerId
-            );
-          }
-        );
-
-        button.addEventListener(
-          "pointercancel",
-          event => {
-
-            stopSustainedNote(
-              event.pointerId
-            );
-          }
-        );
+        button.setPointerCapture(event.pointerId);
+        startSustainedNote(button, event.pointerId);
       });
 
-    document.addEventListener(
-      "pointerup",
-      event => {
+      button.addEventListener("pointerup", event => {
+        event.preventDefault();
+        stopSustainedNote(event.pointerId);
+      });
 
-        stopSustainedNote(
-          event.pointerId
-        );
-      }
-    );
+      button.addEventListener("pointercancel", event => {
+        stopSustainedNote(event.pointerId);
+      });
+    });
 
-    document.addEventListener(
-      "pointercancel",
-      event => {
+    document.addEventListener("pointerup", event => {
+      stopSustainedNote(event.pointerId);
+    });
 
-        stopSustainedNote(
-          event.pointerId
-        );
-      }
-    );
-
+    document.addEventListener("pointercancel", event => {
+      stopSustainedNote(event.pointerId);
+    });
   </script>
 
 </body>
