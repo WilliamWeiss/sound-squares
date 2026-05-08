@@ -105,12 +105,17 @@
       text-align: center;
     }
 
-    .native {
-      box-shadow:
-        0 0 18px rgba(255,255,255,0.85),
-        0 6px 14px rgba(0,0,0,0.35);
-      filter: brightness(1.1);
-    }
+.native {
+  box-shadow:
+    0 0 32px rgba(255,255,255,0.98),
+    0 6px 14px rgba(0,0,0,0.35);
+  filter: brightness(1.25);
+}
+
+.root {
+  outline: 3px solid rgba(255,255,255,1);
+  outline-offset: -5px;
+}
 
     .outside {
       box-shadow:
@@ -214,11 +219,24 @@
       const root = params.get("root") || "C";
       const mode = params.get("mode") || "M";
       const setView = params.get("set") || "full";
+      const octavesParam = params.get("octaves") || "2,3,4,5";
+
+      let octaves = octavesParam
+        .split(",")
+        .map(value => parseInt(value, 10))
+        .filter(value => value >= 1 && value <= 6);
+
+      if (octaves.length === 0) {
+        octaves = [2, 3, 4, 5];
+      }
+
+      octaves = [...new Set(octaves)].sort((a, b) => a - b);
 
       return {
         root: pcToNumber[root] !== undefined ? root : "C",
         mode: scaleFormulas[mode] ? mode : "M",
-        setView: setView === "native" ? "native" : "full"
+        setView: setView === "native" ? "native" : "full",
+        octaves
       };
     }
 
@@ -245,13 +263,14 @@
     function buildGrid() {
       stopAllNotes();
 
-      const { root, mode, setView } = getSettingsFromUrl();
+      const { root, mode, setView, octaves } = getSettingsFromUrl();
+
       const rootNumber = pcToNumber[root];
       const scale = scaleFormulas[mode];
 
       grid.innerHTML = "";
 
-      for (let octave = 1; octave <= 5; octave++) {
+      octaves.forEach(octave => {
         const row = document.createElement("div");
         row.classList.add("octave-row");
 
@@ -297,11 +316,18 @@
           `repeat(${buttonsForRow.length}, minmax(0, 1fr))`;
 
         buttonsForRow.forEach(button => row.appendChild(button));
+
         grid.appendChild(row);
-      }
+      });
 
       gridLabel.textContent =
-        displayNames[root] + " " + modeName(mode) + " · " + viewName(setView);
+        displayNames[root] +
+        " " +
+        modeName(mode) +
+        " · " +
+        viewName(setView) +
+        " · Octaves " +
+        octaves.join(", ");
 
       statusText.textContent =
         displayNames[root] + " " + modeName(mode);
@@ -310,7 +336,8 @@
     function startAudio() {
       if (audioContext) return;
 
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      audioContext =
+        new (window.AudioContext || window.webkitAudioContext)();
 
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
@@ -371,11 +398,13 @@
       });
 
       button.classList.add("active");
+
       updateStatus();
     }
 
     function stopSustainedNote(pointerId) {
       const note = activeNotes.get(pointerId);
+
       if (!note || !audioContext) return;
 
       const now = audioContext.currentTime;
@@ -388,6 +417,7 @@
       note.button.classList.remove("active");
 
       activeNotes.delete(pointerId);
+
       updateStatus();
     }
 
@@ -403,14 +433,19 @@
 
       if (notes.length === 0) {
         const { root, mode } = getSettingsFromUrl();
-        statusText.textContent = displayNames[root] + " " + modeName(mode);
+
+        statusText.textContent =
+          displayNames[root] + " " + modeName(mode);
+
         return;
       }
 
       if (notes.length >= 3) {
-        statusText.textContent = nameChord(notes) + " Chord";
+        statusText.textContent =
+          nameChord(notes) + " Chord";
       } else {
-        statusText.textContent = notes.map(n => n.displayName).join(" – ");
+        statusText.textContent =
+          notes.map(n => n.displayName).join(" – ");
       }
     }
 
@@ -504,11 +539,13 @@
         }
 
         button.setPointerCapture(event.pointerId);
+
         startSustainedNote(button, event.pointerId);
       });
 
       button.addEventListener("pointerup", event => {
         event.preventDefault();
+
         stopSustainedNote(event.pointerId);
       });
 

@@ -11,4 +11,5 @@ should we also let them select from an "Identify Notes in Chord" and "Identify C
 add ability to choose to see "accidentals" or not.
 remove the size differences in western, and enforce the highlighting colors.
 set the index to point to the mode, etc. specific to that selection (like Japanese, Andean, etc.)
-what about the future - setting the voice?
+what about the future - setting the voice? 
+and what about being able to choose the interval pattern for the "native" designation?
