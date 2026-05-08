@@ -126,7 +126,7 @@
 
 <body>
 
-  <a class="back-button" href="index.html">← Back to Menu</a>
+  <a class="back-button" href="western-start.html">← Change Key</a>
 
   <h1>Western Sound Square</h1>
 
@@ -223,42 +223,47 @@
       const rootNumber = pcToNumber[root];
       const scale = scaleFormulas[mode];
 
-      const startMidi = 12 * (1 + 1) + rootNumber;
-      const endMidi = 12 * (5 + 1) + rootNumber + scale[6];
-
       grid.innerHTML = "";
 
-      for (let midi = startMidi; midi <= endMidi; midi++) {
-        const pc = midiToPc(midi);
-        const octave = midiToOctave(midi);
-        const intervalFromRoot = (midi - startMidi) % 12;
-        const isScaleTone = scale.includes(intervalFromRoot);
-        const isRoot = intervalFromRoot === 0;
+      for (let octave = 1; octave <= 5; octave++) {
+        const startMidi = 12 * (octave + 1) + rootNumber;
+        const endMidi = startMidi + scale[6];
 
-        const button = document.createElement("button");
+        for (let midi = startMidi; midi <= endMidi; midi++) {
+          const pc = midiToPc(midi);
+          const noteOctave = midiToOctave(midi);
+          const intervalFromRoot = (midi - startMidi) % 12;
+          const isScaleTone = scale.includes(intervalFromRoot);
+          const isRoot = intervalFromRoot === 0;
 
-        button.classList.add("square");
-        button.classList.add(pcClass[pc]);
-        button.classList.add(isScaleTone ? "scale-tone" : "non-scale-tone");
+          const button = document.createElement("button");
 
-        if (isRoot) {
-          button.classList.add("root");
+          button.classList.add("square");
+          button.classList.add(pcClass[pc]);
+          button.classList.add(isScaleTone ? "scale-tone" : "non-scale-tone");
+
+          if (isRoot) {
+            button.classList.add("root");
+          }
+
+          button.dataset.name = pc + noteOctave;
+          button.dataset.note = midiToFrequency(midi).toFixed(2);
+          button.dataset.pc = pc;
+          button.dataset.midi = midi;
+
+          button.textContent = pc + noteOctave;
+
+          attachSquareEvents(button);
+
+          grid.appendChild(button);
         }
-
-        button.dataset.name = pc + octave;
-        button.dataset.note = midiToFrequency(midi).toFixed(2);
-        button.dataset.pc = pc;
-        button.dataset.midi = midi;
-
-        button.textContent = pc + octave;
-
-        attachSquareEvents(button);
-
-        grid.appendChild(button);
       }
 
-      gridLabel.textContent = root + " " + modeName(mode) + " Grid";
-      statusText.textContent = root + " " + modeName(mode);
+      gridLabel.textContent =
+        root + " " + modeName(mode) + " Grid";
+
+      statusText.textContent =
+        root + " " + modeName(mode);
     }
 
     function startAudio() {
