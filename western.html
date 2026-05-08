@@ -20,12 +20,20 @@
       user-select: none;
     }
 
-    h1 { margin: 10px 0; }
+    h1 { margin: 8px 0; }
+
+    #gridLabel {
+      margin-bottom: 8px;
+      color: #ccc;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
 
     #startButton {
       font-size: 18px;
       padding: 12px 20px;
-      margin: 10px 0;
+      margin: 6px 0;
       border: none;
       border-radius: 12px;
       background: white;
@@ -61,17 +69,17 @@
 
     .grid {
       display: grid;
-      width: min(92vmin, 520px);
-      height: min(92vmin, 760px);
-      grid-template-columns: repeat(8, 1fr);
+      width: min(92vmin, 560px);
+      height: min(76vmin, 720px);
+      grid-template-columns: repeat(14, 1fr);
       grid-auto-rows: 1fr;
-      gap: 2%;
+      gap: 1.4%;
     }
 
     .square {
       border: none;
-      border-radius: 18px;
-      font-size: clamp(13px, 3.2vmin, 22px);
+      border-radius: 16px;
+      font-size: clamp(10px, 2.5vmin, 18px);
       font-weight: bold;
       color: white;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
@@ -79,12 +87,20 @@
       cursor: pointer;
     }
 
-    .natural { grid-column: span 2; }
+    .scale-tone {
+      grid-column: span 2;
+    }
 
-    .flat {
+    .non-scale-tone {
       grid-column: span 1;
-      font-size: clamp(10px, 2.2vmin, 16px);
-      border-radius: 14px;
+      font-size: clamp(8px, 1.8vmin, 13px);
+      border-radius: 12px;
+      opacity: 0.9;
+    }
+
+    .root {
+      outline: 3px solid rgba(255,255,255,0.95);
+      outline-offset: -5px;
     }
 
     .square.active {
@@ -114,52 +130,136 @@
 
   <h1>Western Sound Square</h1>
 
+  <div id="gridLabel">Western Grid</div>
+
   <button id="startButton">Start Audio</button>
+
   <div id="status">Tap Start Audio</div>
 
-  <div class="grid">
-    <button class="square natural c"  data-name="C3"  data-note="130.81" data-pc="C"  data-midi="48">C3</button>
-    <button class="square flat db"    data-name="Db3" data-note="138.59" data-pc="Db" data-midi="49">Db3</button>
-    <button class="square natural d"  data-name="D3"  data-note="146.83" data-pc="D"  data-midi="50">D3</button>
-    <button class="square flat eb"    data-name="Eb3" data-note="155.56" data-pc="Eb" data-midi="51">Eb3</button>
-    <button class="square natural e"  data-name="E3"  data-note="164.81" data-pc="E"  data-midi="52">E3</button>
-
-    <button class="square natural f"  data-name="F3"  data-note="174.61" data-pc="F"  data-midi="53">F3</button>
-    <button class="square flat gb"    data-name="Gb3" data-note="185.00" data-pc="Gb" data-midi="54">Gb3</button>
-    <button class="square natural g"  data-name="G3"  data-note="196.00" data-pc="G"  data-midi="55">G3</button>
-    <button class="square flat ab"    data-name="Ab3" data-note="207.65" data-pc="Ab" data-midi="56">Ab3</button>
-    <button class="square natural a"  data-name="A3"  data-note="220.00" data-pc="A"  data-midi="57">A3</button>
-
-    <button class="square flat bb"    data-name="Bb3" data-note="233.08" data-pc="Bb" data-midi="58">Bb3</button>
-    <button class="square natural b"  data-name="B3"  data-note="246.94" data-pc="B"  data-midi="59">B3</button>
-    <button class="square natural c"  data-name="C4"  data-note="261.63" data-pc="C"  data-midi="60">C4</button>
-    <button class="square flat db"    data-name="Db4" data-note="277.18" data-pc="Db" data-midi="61">Db4</button>
-    <button class="square natural d"  data-name="D4"  data-note="293.66" data-pc="D"  data-midi="62">D4</button>
-
-    <button class="square flat eb"    data-name="Eb4" data-note="311.13" data-pc="Eb" data-midi="63">Eb4</button>
-    <button class="square natural e"  data-name="E4"  data-note="329.63" data-pc="E"  data-midi="64">E4</button>
-    <button class="square natural f"  data-name="F4"  data-note="349.23" data-pc="F"  data-midi="65">F4</button>
-    <button class="square flat gb"    data-name="Gb4" data-note="369.99" data-pc="Gb" data-midi="66">Gb4</button>
-    <button class="square natural g"  data-name="G4"  data-note="392.00" data-pc="G"  data-midi="67">G4</button>
-
-    <button class="square flat ab"    data-name="Ab4" data-note="415.30" data-pc="Ab" data-midi="68">Ab4</button>
-    <button class="square natural a"  data-name="A4"  data-note="440.00" data-pc="A"  data-midi="69">A4</button>
-    <button class="square flat bb"    data-name="Bb4" data-note="466.16" data-pc="Bb" data-midi="70">Bb4</button>
-    <button class="square natural b"  data-name="B4"  data-note="493.88" data-pc="B"  data-midi="71">B4</button>
-    <button class="square natural c"  data-name="C5"  data-note="523.25" data-pc="C"  data-midi="72">C5</button>
-  </div>
+  <div id="grid" class="grid"></div>
 
   <script>
     let audioContext;
 
     const startButton = document.getElementById("startButton");
     const statusText = document.getElementById("status");
+    const gridLabel = document.getElementById("gridLabel");
+    const grid = document.getElementById("grid");
+
     const activeNotes = new Map();
 
     const pcToNumber = {
-      C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5,
-      Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11
+      C: 0,
+      Db: 1,
+      D: 2,
+      Eb: 3,
+      E: 4,
+      F: 5,
+      Gb: 6,
+      G: 7,
+      Ab: 8,
+      A: 9,
+      Bb: 10,
+      B: 11
     };
+
+    const numberToPc = [
+      "C", "Db", "D", "Eb", "E", "F",
+      "Gb", "G", "Ab", "A", "Bb", "B"
+    ];
+
+    const pcClass = {
+      C: "c",
+      Db: "db",
+      D: "d",
+      Eb: "eb",
+      E: "e",
+      F: "f",
+      Gb: "gb",
+      G: "g",
+      Ab: "ab",
+      A: "a",
+      Bb: "bb",
+      B: "b"
+    };
+
+    const scaleFormulas = {
+      M: [0, 2, 4, 5, 7, 9, 11],
+      m: [0, 2, 3, 5, 7, 8, 10]
+    };
+
+    function getSettingsFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+
+      const root = params.get("root") || "C";
+      const mode = params.get("mode") || "M";
+
+      return {
+        root: pcToNumber[root] !== undefined ? root : "C",
+        mode: scaleFormulas[mode] ? mode : "M"
+      };
+    }
+
+    function modeName(mode) {
+      return mode === "M" ? "Major" : "Minor";
+    }
+
+    function midiToPc(midi) {
+      return numberToPc[midi % 12];
+    }
+
+    function midiToOctave(midi) {
+      return Math.floor(midi / 12) - 1;
+    }
+
+    function midiToFrequency(midi) {
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function buildGrid() {
+      stopAllNotes();
+
+      const { root, mode } = getSettingsFromUrl();
+      const rootNumber = pcToNumber[root];
+      const scale = scaleFormulas[mode];
+
+      const startMidi = 12 * (1 + 1) + rootNumber;
+      const endMidi = 12 * (5 + 1) + rootNumber + scale[6];
+
+      grid.innerHTML = "";
+
+      for (let midi = startMidi; midi <= endMidi; midi++) {
+        const pc = midiToPc(midi);
+        const octave = midiToOctave(midi);
+        const intervalFromRoot = (midi - startMidi) % 12;
+        const isScaleTone = scale.includes(intervalFromRoot);
+        const isRoot = intervalFromRoot === 0;
+
+        const button = document.createElement("button");
+
+        button.classList.add("square");
+        button.classList.add(pcClass[pc]);
+        button.classList.add(isScaleTone ? "scale-tone" : "non-scale-tone");
+
+        if (isRoot) {
+          button.classList.add("root");
+        }
+
+        button.dataset.name = pc + octave;
+        button.dataset.note = midiToFrequency(midi).toFixed(2);
+        button.dataset.pc = pc;
+        button.dataset.midi = midi;
+
+        button.textContent = pc + octave;
+
+        attachSquareEvents(button);
+
+        grid.appendChild(button);
+      }
+
+      gridLabel.textContent = root + " " + modeName(mode) + " Grid";
+      statusText.textContent = root + " " + modeName(mode);
+    }
 
     function startAudio() {
       if (audioContext) return;
@@ -244,12 +344,19 @@
       updateStatus();
     }
 
+    function stopAllNotes() {
+      Array.from(activeNotes.keys()).forEach(pointerId => {
+        stopSustainedNote(pointerId);
+      });
+    }
+
     function updateStatus() {
       const notes = Array.from(activeNotes.values())
         .sort((a, b) => a.midi - b.midi);
 
       if (notes.length === 0) {
-        statusText.textContent = " ";
+        const { root, mode } = getSettingsFromUrl();
+        statusText.textContent = root + " " + modeName(mode);
         return;
       }
 
@@ -340,7 +447,7 @@
       return "1";
     }
 
-    document.querySelectorAll(".square").forEach(button => {
+    function attachSquareEvents(button) {
       button.addEventListener("pointerdown", event => {
         event.preventDefault();
 
@@ -361,7 +468,7 @@
       button.addEventListener("pointercancel", event => {
         stopSustainedNote(event.pointerId);
       });
-    });
+    }
 
     document.addEventListener("pointerup", event => {
       stopSustainedNote(event.pointerId);
@@ -370,6 +477,8 @@
     document.addEventListener("pointercancel", event => {
       stopSustainedNote(event.pointerId);
     });
+
+    buildGrid();
   </script>
 
 </body>
