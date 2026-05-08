@@ -79,9 +79,7 @@
       cursor: pointer;
     }
 
-    .natural {
-      grid-column: span 2;
-    }
+    .natural { grid-column: span 2; }
 
     .flat {
       grid-column: span 1;
@@ -100,7 +98,6 @@
     .d  { background: #f7b267; }
     .eb { background: linear-gradient(135deg, #f7b267, #ffd93d); color: #222; }
     .e  { background: #ffd93d; color: #222; }
-
     .f  { background: #6bcb77; }
     .gb { background: linear-gradient(135deg, #6bcb77, #4d96ff); }
     .g  { background: #4d96ff; }
@@ -291,27 +288,46 @@
         const dominant7 = has(10);
 
         if (majorTriad) {
-          const inversion = getInversion(rootPc, lowestPc);
+          const rootName = getRootName(rootPc, notes);
+          const voicing = getVoicing(rootPc, lowestPc);
 
-          if (major7) return rootPc + inversion + "7";
-          if (dominant7) return rootPc + inversion + "D7";
+          if (major7) return rootName + "Mv" + voicing + "7";
+          if (dominant7) return rootName + "Mv" + voicing + "D7";
 
-          return rootPc + inversion;
+          return rootName + "Mv" + voicing;
         }
 
         if (minorTriad) {
-          return rootPc + "m" + getInversion(rootPc, lowestPc);
+          const rootName = getRootName(rootPc, notes);
+          const voicing = getVoicing(rootPc, lowestPc);
+
+          return rootName + "mv" + voicing;
         }
 
         if (diminishedTriad) {
-          return rootPc + "dim" + getInversion(rootPc, lowestPc);
+          const rootName = getRootName(rootPc, notes);
+          const voicing = getVoicing(rootPc, lowestPc);
+
+          return rootName + "dimv" + voicing;
         }
       }
 
       return pcs.join(" – ");
     }
 
-    function getInversion(rootPc, lowestPc) {
+    function getRootName(rootPc, notes) {
+      const matchingRootNotes = notes
+        .filter(note => note.pc === rootPc)
+        .sort((a, b) => a.midi - b.midi);
+
+      if (matchingRootNotes.length > 0) {
+        return matchingRootNotes[0].name;
+      }
+
+      return rootPc;
+    }
+
+    function getVoicing(rootPc, lowestPc) {
       const root = pcToNumber[rootPc];
       const lowest = pcToNumber[lowestPc];
       const interval = (lowest - root + 12) % 12;
