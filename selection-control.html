@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sound Squares Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+
+    h1 {
+      margin: 10px 0 6px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: #ccc;
+      margin-bottom: 18px;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .back-button {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-family: system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      background: rgba(255,255,255,0.82);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+    }
+
+    .section-title {
+      color: #ddd;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin: 14px 0 8px;
+      text-transform: uppercase;
+    }
+
+    .key-grid {
+      display: grid;
+      width: min(92vmin, 620px);
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: min(92vmin, 320px);
+      margin-bottom: 8px;
+    }
+
+    .architecture-grid {
+      display: grid;
+      width: min(92vmin, 620px);
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .square {
+      border: none;
+      border-radius: 16px;
+      min-height: 70px;
+      font-size: clamp(13px, 2.6vmin, 18px);
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+      transition: 0.12s;
+      cursor: pointer;
+      text-align: center;
+      padding: 6px;
+    }
+
+    .square.selected {
+      transform: scale(0.94);
+      outline: 4px solid rgba(255,255,255,0.95);
+      outline-offset: -5px;
+      filter: brightness(1.35);
+      box-shadow: 0 0 28px rgba(255,255,255,0.85);
+    }
+
+    .major-square {
+      background: #fff6c9;
+      color: #222;
+    }
+
+    .minor-square {
+      background: #444;
+      color: white;
+    }
+
+    .architecture-square {
+      background: #2f3542;
+      color: white;
+    }
+
+    .architecture-square.diatonic {
+      background: #4d6f91;
+    }
+
+    .architecture-square.pentatonic {
+      background: #4f6f5d;
+    }
+
+    .architecture-square.blues {
+      background: #3f4e6f;
+    }
+
+    .architecture-square.modal {
+      background: #5b4a6b;
+    }
+
+    .architecture-square.chromatic {
+      background: #666;
+    }
+
+    #selectionLabel {
+      color: #ccc;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+      min-height: 26px;
+      text-align: center;
+    }
+
+    #enterButton {
+      padding: 14px 24px;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      background: white;
+      color: #111;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+
+    .c  { background: #ff6b6b; }
+    .db { background: linear-gradient(135deg, #ff6b6b, #f7b267); }
+    .d  { background: #f7b267; }
+    .eb { background: linear-gradient(135deg, #f7b267, #ffd93d); color: #222; }
+    .e  { background: #ffd93d; color: #222; }
+    .f  { background: #6bcb77; }
+    .gb { background: linear-gradient(135deg, #6bcb77, #4d96ff); }
+    .g  { background: #4d96ff; }
+    .ab { background: linear-gradient(135deg, #4d96ff, #9d4edd); }
+    .a  { background: #9d4edd; }
+    .bb { background: linear-gradient(135deg, #9d4edd, #ff8fab); }
+    .b  { background: #ff8fab; }
+  </style>
+</head>
+
+<body>
+
+  <a class="back-button" href="index.html">← Back to Menu</a>
+
+  <h1>Sound Squares Control</h1>
+
+  <div class="subtitle">
+    Choose a root, modality, and architecture.
+  </div>
+
+  <div class="section-title">Root</div>
+  <div class="key-grid" id="keyGrid"></div>
+
+  <div class="section-title">Modality</div>
+  <div class="mode-grid">
+    <button class="square major-square selected" id="majorButton">Major</button>
+    <button class="square minor-square" id="minorButton">Minor</button>
+  </div>
+
+  <div class="section-title">Architecture</div>
+  <div class="architecture-grid">
+    <button class="square architecture-square diatonic selected" data-architecture="diatonic">Diatonic</button>
+    <button class="square architecture-square pentatonic" data-architecture="pentatonic">Pentatonic</button>
+    <button class="square architecture-square blues" data-architecture="blues">Blues</button>
+    <button class="square architecture-square modal" data-architecture="modal">Modal</button>
+    <button class="square architecture-square chromatic" data-architecture="chromatic">Chromatic</button>
+  </div>
+
+  <div id="selectionLabel">C Major · Diatonic</div>
+
+  <button id="enterButton">Enter Grid</button>
+
+  <script>
+    const keyGrid = document.getElementById("keyGrid");
+    const selectionLabel = document.getElementById("selectionLabel");
+    const enterButton = document.getElementById("enterButton");
+
+    const majorButton = document.getElementById("majorButton");
+    const minorButton = document.getElementById("minorButton");
+
+    let selectedRoot = "C";
+    let selectedMode = "M";
+    let selectedArchitecture = "diatonic";
+
+    const displayNames = {
+      C:  "C",
+      Db: "C#/Db",
+      D:  "D",
+      Eb: "D#/Eb",
+      E:  "E",
+      F:  "F",
+      Gb: "F#/Gb",
+      G:  "G",
+      Ab: "G#/Ab",
+      A:  "A",
+      Bb: "A#/Bb",
+      B:  "B"
+    };
+
+    const notes = [
+      { name: "C",  className: "c"  },
+      { name: "Db", className: "db" },
+      { name: "D",  className: "d"  },
+      { name: "Eb", className: "eb" },
+      { name: "E",  className: "e"  },
+      { name: "F",  className: "f"  },
+      { name: "Gb", className: "gb" },
+      { name: "G",  className: "g"  },
+      { name: "Ab", className: "ab" },
+      { name: "A",  className: "a"  },
+      { name: "Bb", className: "bb" },
+      { name: "B",  className: "b"  }
+    ];
+
+    function buildKeyGrid() {
+      keyGrid.innerHTML = "";
+
+      notes.forEach(note => {
+        const button = document.createElement("button");
+
+        button.classList.add("square");
+        button.classList.add(note.className);
+
+        if (note.name === selectedRoot) {
+          button.classList.add("selected");
+        }
+
+        button.dataset.root = note.name;
+        button.textContent = displayNames[note.name];
+
+        button.addEventListener("click", () => {
+          selectedRoot = note.name;
+          buildKeyGrid();
+          updateSelectionLabel();
+        });
+
+        keyGrid.appendChild(button);
+      });
+    }
+
+    function updateModeButtons() {
+      majorButton.classList.toggle("selected", selectedMode === "M");
+      minorButton.classList.toggle("selected", selectedMode === "m");
+    }
+
+    function updateArchitectureButtons() {
+      document.querySelectorAll(".architecture-square").forEach(button => {
+        button.classList.toggle(
+          "selected",
+          button.dataset.architecture === selectedArchitecture
+        );
+      });
+    }
+
+    function architectureName(value) {
+      const names = {
+        diatonic: "Diatonic",
+        pentatonic: "Pentatonic",
+        blues: "Blues",
+        modal: "Modal",
+        chromatic: "Chromatic"
+      };
+
+      return names[value] || value;
+    }
+
+    function modeName(mode) {
+      return mode === "M" ? "Major" : "Minor";
+    }
+
+    function updateSelectionLabel() {
+      selectionLabel.textContent =
+        displayNames[selectedRoot] +
+        " " +
+        modeName(selectedMode) +
+        " · " +
+        architectureName(selectedArchitecture);
+    }
+
+    majorButton.addEventListener("click", () => {
+      selectedMode = "M";
+      updateModeButtons();
+      updateSelectionLabel();
+    });
+
+    minorButton.addEventListener("click", () => {
+      selectedMode = "m";
+      updateModeButtons();
+      updateSelectionLabel();
+    });
+
+    document.querySelectorAll(".architecture-square").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedArchitecture = button.dataset.architecture;
+        updateArchitectureButtons();
+        updateSelectionLabel();
+      });
+    });
+
+    enterButton.addEventListener("click", () => {
+      const root = encodeURIComponent(selectedRoot);
+      const mode = encodeURIComponent(selectedMode);
+      const architecture = encodeURIComponent(selectedArchitecture);
+
+      window.location.href =
+        `western.html?root=${root}&mode=${mode}&architecture=${architecture}`;
+    });
+
+    buildKeyGrid();
+    updateModeButtons();
+    updateArchitectureButtons();
+    updateSelectionLabel();
+  </script>
+
+</body>
+</html>
