@@ -1,0 +1,14 @@
+next ideas - have a way to select the key you want - 
+add a Major of Minor blue highlighting.  so the major keys would become the full sized squares, and the select of minor key would make the notes that were in that minor key to highlight in blue.  the default will be major scale, but anyone can press a button to get highlighted minor notes.  so a note in the scale shows up as a full sized square, and a note that's not in the scale (accidental in a relative sense to the scale) it would be a half sized box?
+
+make the assumption that a c will always be that color as the C1 in the C grid.
+so that means that we can make the key selection grid a bunch of squares of C to B with the colors we had assigned, and the shape sizes as well.
+
+what do you think of adding an area so you can see all the keys represented by colored squares starting with the root and ending with its 7th, by their set colors. when a chord is played the note name will highlight in blue.  So it would show of all the notes in the octave starting with the root of the key previously selected in western-start.html). the large squares would be the relative Naturals in the key mode, and non-modality notes would be half size, based on the modality already selected.  So for example in a major key the natural notes that didn't have a half-square between them would be the 3 to 4 and the 7 to root plus 1.
+also add the functionality of showing if its in a major or minor key, using the same color-coding as Western-start.html. The second a series will be the Octave selections, 1 through 5. Also show a series of inversion squares, help me pick out colors for these, or textures?  showing the First, Second, and Third Inversion squares. Highlight it according to the selected chord's inversion. When a chorhd key combination is played the Key square is highlighted, the Mode square is highlighted, inversion number show up (1 - 3), correct buttons are highlighted.  on the other hand, if you press the buttons key, mode and inversion it will play the chord and highlight the notes for you.  can you do that?
+should we also let them select from an "Identify Notes in Chord" and "Identify Chord from Notes" to help us determine whether to highlight the chord section to get the notes or the notes that will determine the chord being played.  would those two squares be necessary?
+
+add ability to choose to see "accidentals" or not.
+remove the size differences in western, and enforce the highlighting colors.
+set the index to point to the mode, etc. specific to that selection (like Japanese, Andean, etc.)
+what about the future - setting the voice?

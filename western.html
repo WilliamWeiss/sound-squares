@@ -50,61 +50,52 @@
       letter-spacing: 0.04em;
     }
 
+    .top-button {
+      position: fixed;
+      top: 18px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      text-decoration: none;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      color: #222;
+      background: rgba(255,255,255,0.86);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      transition: 0.12s;
+    }
 
-  .top-button {
-    position: fixed;
-    top: 18px;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    text-decoration: none;
-    display: grid;
-    place-items: center;
-    font-size: 24px;
-    color: #222;
-    background: rgba(255,255,255,0.86);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
-    backdrop-filter: blur(8px);
-    z-index: 1000;
-    transition: 0.12s;
-  }
+    .top-button:hover,
+    .top-button:active {
+      transform: scale(0.94);
+      filter: brightness(1.08);
+    }
 
-  .top-button:hover,
-  .top-button:active {
-    transform: scale(0.94);
-    filter: brightness(1.08);
-  }
-
-  .back-button {
-    left: 18px;
-  }
-
-  .settings-button {
-    right: 18px;
-  }
-
-
+    .back-button { left: 18px; }
+    .settings-button { right: 18px; }
 
     .grid {
-      width: min(92vmin, 680px);
-      height: min(76vmin, 720px);
+      width: min(92vmin, 720px);
       display: flex;
       flex-direction: column;
-      gap: 1.4%;
+      gap: 10px;
     }
 
     .octave-row {
       display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 1fr;
-      flex: 1;
-      gap: 1.4%;
+      gap: 10px;
+      justify-content: center;
     }
 
     .square {
       border: none;
       border-radius: 16px;
-      font-size: clamp(7px, 1.65vmin, 14px);
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      font-size: clamp(7px, 1.4vmin, 14px);
       font-weight: bold;
       color: white;
       transition: 0.08s;
@@ -116,29 +107,29 @@
 
     .native {
       box-shadow:
-        0 0 14px rgba(255,255,255,0.7),
+        0 0 18px rgba(255,255,255,0.85),
         0 6px 14px rgba(0,0,0,0.35);
-      filter: brightness(1.08);
+      filter: brightness(1.1);
     }
 
     .outside {
       box-shadow:
-        0 0 12px rgba(150,150,150,0.45),
+        0 0 14px rgba(150,150,150,0.5),
         0 6px 14px rgba(0,0,0,0.35);
-      filter: brightness(0.78) saturate(0.75);
+      filter: brightness(0.72) saturate(0.65);
     }
 
     .root {
-      outline: 3px solid rgba(255,255,255,0.98);
+      outline: 3px solid rgba(255,255,255,1);
       outline-offset: -5px;
-      filter: brightness(1.25);
+      filter: brightness(1.28);
     }
 
     .square.active {
       transform: scale(0.9);
-      filter: brightness(1.6);
+      filter: brightness(1.65);
       box-shadow:
-        0 0 30px rgba(255,255,255,0.95),
+        0 0 32px rgba(255,255,255,0.98),
         0 6px 14px rgba(0,0,0,0.35);
     }
 
@@ -159,19 +150,8 @@
 
 <body>
 
-<a
-  class="top-button back-button"
-  href="index.html"
-  title="Back">
-  ←
-</a>
-
-<a
-  class="top-button settings-button"
-  href="selection-control.html"
-  title="Control Settings">
-  ⚙
-</a>
+  <a class="top-button back-button" href="index.html" title="Back">←</a>
+  <a class="top-button settings-button" href="selection-control.html" title="Control Settings">⚙</a>
 
   <h1>Western Sound Square</h1>
 
@@ -278,6 +258,8 @@
         const startMidi = 12 * (octave + 1) + rootNumber;
         const endMidi = startMidi + scale[6];
 
+        const buttonsForRow = [];
+
         for (let midi = startMidi; midi <= endMidi; midi++) {
           const pc = midiToPc(midi);
           const noteOctave = midiToOctave(midi);
@@ -308,9 +290,13 @@
           button.textContent = displayNames[pc] + noteOctave;
 
           attachSquareEvents(button);
-          row.appendChild(button);
+          buttonsForRow.push(button);
         }
 
+        row.style.gridTemplateColumns =
+          `repeat(${buttonsForRow.length}, minmax(0, 1fr))`;
+
+        buttonsForRow.forEach(button => row.appendChild(button));
         grid.appendChild(row);
       }
 

@@ -2,7 +2,7 @@
 
 simple sound language - press button and hear a note.
 
-try the different sound patterns to hear other musical cultures.
+try the different sound patterns to hear other musical cultures, found in settings.
 
-In the Western square, hold the square a little longer to get a flat (except C and F.)
+
 
