@@ -68,18 +68,23 @@
     }
 
     .grid {
-      display: grid;
-      width: min(92vmin, 560px);
+      width: min(92vmin, 620px);
       height: min(76vmin, 720px);
-      grid-template-columns: repeat(14, 1fr);
-      grid-auto-rows: 1fr;
+      display: flex;
+      flex-direction: column;
+      gap: 1.4%;
+    }
+
+    .octave-row {
+      display: grid;
+      flex: 1;
       gap: 1.4%;
     }
 
     .square {
       border: none;
       border-radius: 16px;
-      font-size: clamp(8px, 1.9vmin, 15px);
+      font-size: clamp(8px, 1.8vmin, 15px);
       font-weight: bold;
       color: white;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
@@ -90,11 +95,13 @@
       text-align: center;
     }
 
-    .scale-tone { grid-column: span 2; }
+    .scale-tone {
+      grid-column: span 2;
+    }
 
     .non-scale-tone {
       grid-column: span 1;
-      font-size: clamp(6px, 1.35vmin, 10px);
+      font-size: clamp(6px, 1.25vmin, 10px);
       border-radius: 12px;
       opacity: 0.9;
     }
@@ -220,7 +227,15 @@
 
       grid.innerHTML = "";
 
+      const totalUnits =
+        scale.length * 2 +
+        ((scale[6] + 1) - scale.length);
+
       for (let octave = 1; octave <= 5; octave++) {
+        const row = document.createElement("div");
+        row.classList.add("octave-row");
+        row.style.gridTemplateColumns = `repeat(${totalUnits}, 1fr)`;
+
         const startMidi = 12 * (octave + 1) + rootNumber;
         const endMidi = startMidi + scale[6];
 
@@ -250,12 +265,17 @@
           button.textContent = displayNames[pc] + noteOctave;
 
           attachSquareEvents(button);
-          grid.appendChild(button);
+          row.appendChild(button);
         }
+
+        grid.appendChild(row);
       }
 
-      gridLabel.textContent = displayNames[root] + " " + modeName(mode) + " Grid";
-      statusText.textContent = displayNames[root] + " " + modeName(mode);
+      gridLabel.textContent =
+        displayNames[root] + " " + modeName(mode) + " Grid";
+
+      statusText.textContent =
+        displayNames[root] + " " + modeName(mode);
     }
 
     function startAudio() {
