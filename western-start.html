@@ -61,12 +61,15 @@
     .square {
       border: none;
       border-radius: 16px;
-      font-size: clamp(10px, 2.5vmin, 18px);
+      font-size: clamp(9px, 2.1vmin, 16px);
       font-weight: bold;
       color: white;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
       transition: 0.12s;
       cursor: pointer;
+      line-height: 1.05;
+      padding: 4px;
+      text-align: center;
     }
 
     .scale-tone {
@@ -75,7 +78,7 @@
 
     .non-scale-tone {
       grid-column: span 1;
-      font-size: clamp(8px, 1.8vmin, 13px);
+      font-size: clamp(7px, 1.5vmin, 11px);
       border-radius: 12px;
       opacity: 0.92;
     }
@@ -212,6 +215,21 @@
     let selectedRoot = "C";
     let selectedMode = "M";
 
+    const displayNames = {
+      C:  "C",
+      Db: "C#/Db",
+      D:  "D",
+      Eb: "D#/Eb",
+      E:  "E",
+      F:  "F",
+      Gb: "F#/Gb",
+      G:  "G",
+      Ab: "G#/Ab",
+      A:  "A",
+      Bb: "A#/Bb",
+      B:  "B"
+    };
+
     const notes = [
 
       {
@@ -309,7 +327,8 @@
 
         button.dataset.root = note.name;
 
-        button.textContent = note.name;
+        button.textContent =
+          displayNames[note.name];
 
         button.addEventListener(
           "click",
@@ -343,7 +362,7 @@
     function updateSelectionLabel() {
 
       selectionLabel.textContent =
-        selectedRoot +
+        displayNames[selectedRoot] +
         " " +
         (
           selectedMode === "M"

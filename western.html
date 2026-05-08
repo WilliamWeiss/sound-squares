@@ -79,21 +79,22 @@
     .square {
       border: none;
       border-radius: 16px;
-      font-size: clamp(10px, 2.5vmin, 18px);
+      font-size: clamp(8px, 1.9vmin, 15px);
       font-weight: bold;
       color: white;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
       transition: 0.08s;
       cursor: pointer;
+      line-height: 1.05;
+      padding: 4px;
+      text-align: center;
     }
 
-    .scale-tone {
-      grid-column: span 2;
-    }
+    .scale-tone { grid-column: span 2; }
 
     .non-scale-tone {
       grid-column: span 1;
-      font-size: clamp(8px, 1.8vmin, 13px);
+      font-size: clamp(6px, 1.35vmin, 10px);
       border-radius: 12px;
       opacity: 0.9;
     }
@@ -149,18 +150,8 @@
     const activeNotes = new Map();
 
     const pcToNumber = {
-      C: 0,
-      Db: 1,
-      D: 2,
-      Eb: 3,
-      E: 4,
-      F: 5,
-      Gb: 6,
-      G: 7,
-      Ab: 8,
-      A: 9,
-      Bb: 10,
-      B: 11
+      C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5,
+      Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11
     };
 
     const numberToPc = [
@@ -168,19 +159,24 @@
       "Gb", "G", "Ab", "A", "Bb", "B"
     ];
 
+    const displayNames = {
+      C:  "C",
+      Db: "C#/Db",
+      D:  "D",
+      Eb: "D#/Eb",
+      E:  "E",
+      F:  "F",
+      Gb: "F#/Gb",
+      G:  "G",
+      Ab: "G#/Ab",
+      A:  "A",
+      Bb: "A#/Bb",
+      B:  "B"
+    };
+
     const pcClass = {
-      C: "c",
-      Db: "db",
-      D: "d",
-      Eb: "eb",
-      E: "e",
-      F: "f",
-      Gb: "gb",
-      G: "g",
-      Ab: "ab",
-      A: "a",
-      Bb: "bb",
-      B: "b"
+      C: "c", Db: "db", D: "d", Eb: "eb", E: "e", F: "f",
+      Gb: "gb", G: "g", Ab: "ab", A: "a", Bb: "bb", B: "b"
     };
 
     const scaleFormulas = {
@@ -190,7 +186,6 @@
 
     function getSettingsFromUrl() {
       const params = new URLSearchParams(window.location.search);
-
       const root = params.get("root") || "C";
       const mode = params.get("mode") || "M";
 
@@ -247,23 +242,20 @@
           }
 
           button.dataset.name = pc + noteOctave;
+          button.dataset.displayName = displayNames[pc] + noteOctave;
           button.dataset.note = midiToFrequency(midi).toFixed(2);
           button.dataset.pc = pc;
           button.dataset.midi = midi;
 
-          button.textContent = pc + noteOctave;
+          button.textContent = displayNames[pc] + noteOctave;
 
           attachSquareEvents(button);
-
           grid.appendChild(button);
         }
       }
 
-      gridLabel.textContent =
-        root + " " + modeName(mode) + " Grid";
-
-      statusText.textContent =
-        root + " " + modeName(mode);
+      gridLabel.textContent = displayNames[root] + " " + modeName(mode) + " Grid";
+      statusText.textContent = displayNames[root] + " " + modeName(mode);
     }
 
     function startAudio() {
@@ -325,6 +317,7 @@
         gain,
         pc: button.dataset.pc,
         name: button.dataset.name,
+        displayName: button.dataset.displayName,
         midi: parseInt(button.dataset.midi, 10)
       });
 
@@ -361,14 +354,14 @@
 
       if (notes.length === 0) {
         const { root, mode } = getSettingsFromUrl();
-        statusText.textContent = root + " " + modeName(mode);
+        statusText.textContent = displayNames[root] + " " + modeName(mode);
         return;
       }
 
       if (notes.length >= 3) {
         statusText.textContent = nameChord(notes) + " Chord";
       } else {
-        statusText.textContent = notes.map(n => n.name).join(" – ");
+        statusText.textContent = notes.map(n => n.displayName).join(" – ");
       }
     }
 
