@@ -77,6 +77,7 @@
 
     .octave-row {
       display: grid;
+      grid-template-columns: repeat(14, 1fr);
       flex: 1;
       gap: 1.4%;
     }
@@ -227,14 +228,9 @@
 
       grid.innerHTML = "";
 
-      const totalUnits =
-        scale.length * 2 +
-        ((scale[6] + 1) - scale.length);
-
       for (let octave = 1; octave <= 5; octave++) {
         const row = document.createElement("div");
         row.classList.add("octave-row");
-        row.style.gridTemplateColumns = `repeat(${totalUnits}, 1fr)`;
 
         const startMidi = 12 * (octave + 1) + rootNumber;
         const endMidi = startMidi + scale[6];
