@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sound Squares Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+
+      --native-glow: rgba(255,255,255,0.98);
+      --outside-glow: rgba(150,150,150,0.5);
+    }
+
+    h1 { margin: 8px 0; }
+
+    #gridLabel {
+      margin-bottom: 8px;
+      color: #ccc;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    #startButton {
+      font-size: 18px;
+      padding: 12px 20px;
+      margin: 6px 0;
+      border: none;
+      border-radius: 12px;
+      background: white;
+      color: black;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-bottom: 10px;
+      color: #ccc;
+      font-size: 18px;
+      height: 26px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .top-button {
+      position: fixed;
+      top: 18px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      text-decoration: none;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      color: #222;
+      background: rgba(255,255,255,0.86);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      transition: 0.12s;
+    }
+
+    .top-button:hover,
+    .top-button:active {
+      transform: scale(0.94);
+      filter: brightness(1.08);
+    }
+
+    .back-button { left: 18px; }
+    .settings-button { right: 18px; }
+
+    .grid {
+      width: min(92vmin, 720px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .octave-row {
+      display: grid;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .square {
+      border: none;
+      border-radius: 16px;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      font-size: clamp(7px, 1.4vmin, 14px);
+      font-weight: bold;
+      color: white;
+      transition: 0.08s;
+      cursor: pointer;
+      line-height: 1.05;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .native {
+      box-shadow:
+        0 0 32px var(--native-glow),
+        0 6px 14px rgba(0,0,0,0.35);
+      filter: brightness(1.25);
+    }
+
+    .outside {
+      box-shadow:
+        0 0 14px var(--outside-glow),
+        0 6px 14px rgba(0,0,0,0.35);
+      filter: brightness(0.72) saturate(0.65);
+    }
+
+    .root {
+      outline: 3px solid rgba(255,255,255,1);
+      outline-offset: -5px;
+    }
+
+    .square.active {
+      transform: scale(0.9);
+      filter: brightness(1.65);
+      box-shadow:
+        0 0 34px var(--native-glow),
+        0 6px 14px rgba(0,0,0,0.35);
+    }
+
+    .c  { background: #ff6b6b; }
+    .db { background: linear-gradient(135deg, #ff6b6b, #f7b267); }
+    .d  { background: #f7b267; }
+    .eb { background: linear-gradient(135deg, #f7b267, #ffd93d); color: #222; }
+    .e  { background: #ffd93d; color: #222; }
+    .f  { background: #6bcb77; }
+    .gb { background: linear-gradient(135deg, #6bcb77, #4d96ff); }
+    .g  { background: #4d96ff; }
+    .ab { background: linear-gradient(135deg, #4d96ff, #9d4edd); }
+    .a  { background: #9d4edd; }
+    .bb { background: linear-gradient(135deg, #9d4edd, #ff8fab); }
+    .b  { background: #ff8fab; }
+  </style>
+</head>
+
+<body>
+
+  <a class="top-button back-button" href="index.html" title="Back">←</a>
+  <a class="top-button settings-button" href="selection-control.html" title="Control Settings">⚙</a>
+
+  <h1 id="pageTitle">Sound Squares Player</h1>
+
+  <div id="gridLabel">Grid</div>
+
+  <button id="startButton">Start Audio</button>
+
+  <div id="status">Tap Start Audio</div>
+
+  <div id="grid" class="grid"></div>
+
+  <script>
+    let audioContext;
+
+    const startButton = document.getElementById("startButton");
+    const statusText = document.getElementById("status");
+    const gridLabel = document.getElementById("gridLabel");
+    const grid = document.getElementById("grid");
+    const pageTitle = document.getElementById("pageTitle");
+
+    const activeNotes = new Map();
+
+    const pcToNumber = {
+      C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5,
+      Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11
+    };
+
+    const numberToPc = [
+      "C", "Db", "D", "Eb", "E", "F",
+      "Gb", "G", "Ab", "A", "Bb", "B"
+    ];
+
+    const displayNames = {
+      C:  "C",
+      Db: "C#/Db",
+      D:  "D",
+      Eb: "D#/Eb",
+      E:  "E",
+      F:  "F",
+      Gb: "F#/Gb",
+      G:  "G",
+      Ab: "G#/Ab",
+      A:  "A",
+      Bb: "A#/Bb",
+      B:  "B"
+    };
+
+    const pcClass = {
+      C: "c", Db: "db", D: "d", Eb: "eb", E: "e", F: "f",
+      Gb: "gb", G: "g", Ab: "ab", A: "a", Bb: "bb", B: "b"
+    };
+
+    const architectureFormulas = {
+      diatonic: {
+        M: [0, 2, 4, 5, 7, 9, 11],
+        m: [0, 2, 3, 5, 7, 8, 10]
+      },
+      pentatonic: {
+        M: [0, 2, 4, 7, 9],
+        m: [0, 3, 5, 7, 10]
+      },
+      blues: {
+        M: [0, 2, 3, 4, 7, 9],
+        m: [0, 3, 5, 6, 7, 10]
+      },
+      modal: {
+        M: [0, 2, 4, 5, 7, 9, 11],
+        m: [0, 2, 3, 5, 7, 8, 10]
+      },
+      chromatic: {
+        M: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        m: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      }
+    };
+
+    const tintSettings = {
+      diatonicM: {
+        native: "rgba(255, 238, 170, 0.98)",
+        outside: "rgba(170, 160, 130, 0.45)"
+      },
+      diatonicm: {
+        native: "rgba(190, 215, 255, 0.98)",
+        outside: "rgba(120, 135, 160, 0.45)"
+      },
+      pentatonicM: {
+        native: "rgba(190, 255, 205, 0.98)",
+        outside: "rgba(115, 155, 125, 0.45)"
+      },
+      pentatonicm: {
+        native: "rgba(150, 220, 175, 0.98)",
+        outside: "rgba(95, 130, 105, 0.45)"
+      },
+      bluesM: {
+        native: "rgba(130, 170, 255, 0.98)",
+        outside: "rgba(70, 90, 150, 0.5)"
+      },
+      bluesm: {
+        native: "rgba(120, 145, 240, 0.98)",
+        outside: "rgba(70, 75, 130, 0.5)"
+      },
+      modalM: {
+        native: "rgba(220, 175, 255, 0.98)",
+        outside: "rgba(120, 85, 150, 0.5)"
+      },
+      modalm: {
+        native: "rgba(185, 155, 240, 0.98)",
+        outside: "rgba(100, 80, 140, 0.5)"
+      },
+      chromaticM: {
+        native: "rgba(235, 235, 235, 0.98)",
+        outside: "rgba(235, 235, 235, 0.98)"
+      },
+      chromaticm: {
+        native: "rgba(210, 210, 220, 0.98)",
+        outside: "rgba(210, 210, 220, 0.98)"
+      }
+    };
+
+    const allowedVoices = [
+      "pure",
+      "warm",
+      "ocarina",
+      "guitar",
+      "piano",
+      "organ",
+      "bell",
+      "synth",
+      "choir"
+    ];
+
+    function getSettingsFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+
+      const system = params.get("system") || "western";
+      const root = params.get("root") || "C";
+      const mode = params.get("mode") || "M";
+      const architecture = params.get("architecture") || "diatonic";
+      const setView = params.get("set") || "full";
+      const voice = params.get("voice") || "warm";
+      const octavesParam = params.get("octaves") || "2,3,4,5";
+
+      let octaves = octavesParam
+        .split(",")
+        .map(value => parseInt(value, 10))
+        .filter(value => value >= 1 && value <= 6);
+
+      if (octaves.length === 0) {
+        octaves = [2, 3, 4, 5];
+      }
+
+      octaves = [...new Set(octaves)].sort((a, b) => a - b);
+
+      return {
+        system,
+        root: pcToNumber[root] !== undefined ? root : "C",
+        mode: mode === "m" ? "m" : "M",
+        architecture: architectureFormulas[architecture]
+          ? architecture
+          : "diatonic",
+        setView: setView === "native" ? "native" : "full",
+        voice: allowedVoices.includes(voice) ? voice : "warm",
+        octaves
+      };
+    }
+
+    function systemName(system) {
+      const names = {
+        western: "Western",
+        japanese: "Japanese",
+        chinese: "Chinese",
+        andean: "Andean",
+        indian: "Indian",
+        maqam: "Maqam",
+        celtic: "Celtic",
+        blues: "Blues",
+        african: "African"
+      };
+
+      return names[system] || "Western";
+    }
+
+    function voiceName(voice) {
+      const names = {
+        pure: "Pure",
+        warm: "Warm",
+        ocarina: "Ocarina",
+        guitar: "Guitar",
+        piano: "Piano",
+        organ: "Organ",
+        bell: "Bell",
+        synth: "Synth",
+        choir: "Choir"
+      };
+
+      return names[voice] || "Warm";
+    }
+
+    function applyTint(architecture, mode) {
+      const key = architecture + mode;
+      const tint =
+        tintSettings[key] ||
+        tintSettings.diatonicM;
+
+      document.body.style.setProperty(
+        "--native-glow",
+        tint.native
+      );
+
+      document.body.style.setProperty(
+        "--outside-glow",
+        tint.outside
+      );
+    }
+
+    function getSelectedFormula(architecture, mode) {
+      const architectureSet =
+        architectureFormulas[architecture] ||
+        architectureFormulas.diatonic;
+
+      return architectureSet[mode] || architectureSet.M;
+    }
+
+    function modeName(mode) {
+      return mode === "M" ? "Major" : "Minor";
+    }
+
+    function architectureName(architecture) {
+      const names = {
+        diatonic: "Diatonic",
+        pentatonic: "Pentatonic",
+        blues: "Blues",
+        modal: "Modal",
+        chromatic: "Chromatic"
+      };
+
+      return names[architecture] || "Diatonic";
+    }
+
+    function viewName(setView) {
+      return setView === "native" ? "Native Only" : "Full Set";
+    }
+
+    function midiToPc(midi) {
+      return numberToPc[midi % 12];
+    }
+
+    function midiToOctave(midi) {
+      return Math.floor(midi / 12) - 1;
+    }
+
+    function midiToFrequency(midi) {
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function buildGrid() {
+      stopAllNotes();
+
+      const {
+        system,
+        root,
+        mode,
+        architecture,
+        setView,
+        voice,
+        octaves
+      } = getSettingsFromUrl();
+
+      applyTint(architecture, mode);
+
+      const rootNumber = pcToNumber[root];
+      const nativeFormula = getSelectedFormula(architecture, mode);
+      const finalInterval = nativeFormula[nativeFormula.length - 1];
+
+      grid.innerHTML = "";
+
+      octaves.forEach(octave => {
+        const row = document.createElement("div");
+        row.classList.add("octave-row");
+
+        const startMidi = 12 * (octave + 1) + rootNumber;
+        const endMidi = startMidi + finalInterval;
+
+        const buttonsForRow = [];
+
+        for (let midi = startMidi; midi <= endMidi; midi++) {
+          const pc = midiToPc(midi);
+          const noteOctave = midiToOctave(midi);
+          const intervalFromRoot = (midi - startMidi) % 12;
+          const isNative = nativeFormula.includes(intervalFromRoot);
+          const isRoot = intervalFromRoot === 0;
+
+          if (setView === "native" && !isNative) {
+            continue;
+          }
+
+          const button = document.createElement("button");
+
+          button.classList.add("square");
+          button.classList.add(pcClass[pc]);
+          button.classList.add(isNative ? "native" : "outside");
+
+          if (isRoot) {
+            button.classList.add("root");
+          }
+
+          button.dataset.name = pc + noteOctave;
+          button.dataset.displayName = displayNames[pc] + noteOctave;
+          button.dataset.note = midiToFrequency(midi).toFixed(2);
+          button.dataset.pc = pc;
+          button.dataset.midi = midi;
+
+          button.textContent = displayNames[pc] + noteOctave;
+
+          attachSquareEvents(button);
+          buttonsForRow.push(button);
+        }
+
+        row.style.gridTemplateColumns =
+          `repeat(${buttonsForRow.length}, minmax(0, 1fr))`;
+
+        buttonsForRow.forEach(button => row.appendChild(button));
+
+        grid.appendChild(row);
+      });
+
+      pageTitle.textContent =
+        systemName(system) + " Sound Square";
+
+      gridLabel.textContent =
+        displayNames[root] +
+        " " +
+        modeName(mode) +
+        " · " +
+        architectureName(architecture) +
+        " · " +
+        viewName(setView) +
+        " · Octaves " +
+        octaves.join(", ") +
+        " · " +
+        voiceName(voice);
+
+      statusText.textContent =
+        displayNames[root] + " " + modeName(mode);
+    }
+
+    function startAudio() {
+      if (audioContext) return;
+
+      audioContext =
+        new (window.AudioContext || window.webkitAudioContext)();
+
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      osc.frequency.value = 440;
+      gain.gain.value = 0.05;
+
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.1);
+
+      statusText.textContent = "Audio Ready";
+      startButton.style.display = "none";
+    }
+
+    startButton.addEventListener("click", startAudio);
+    startButton.addEventListener("touchend", startAudio);
+
+    function createOscillator(freq, type, gainValue, detune = 0) {
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      osc.type = type;
+      osc.frequency.value = freq;
+      osc.detune.value = detune;
+      gain.gain.value = gainValue;
+
+      osc.connect(gain);
+
+      return { osc, gain };
+    }
+
+    function startSustainedNote(button, pointerId) {
+      if (!audioContext) {
+        statusText.textContent = "Tap Start Audio first";
+        return;
+      }
+
+      if (activeNotes.has(pointerId)) return;
+
+      const { voice } = getSettingsFromUrl();
+
+      const now = audioContext.currentTime;
+      const freq = parseFloat(button.dataset.note);
+
+      const mainGain = audioContext.createGain();
+      const filter = audioContext.createBiquadFilter();
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1800, now);
+
+      mainGain.gain.setValueAtTime(0.0001, now);
+
+      const oscillators = [];
+
+      if (voice === "choir") {
+        mainGain.gain.linearRampToValueAtTime(0.16, now + 0.45);
+
+        filter.frequency.setValueAtTime(950, now);
+
+        oscillators.push(createOscillator(freq, "sine", 0.45, -7));
+        oscillators.push(createOscillator(freq, "triangle", 0.32, 5));
+        oscillators.push(createOscillator(freq * 2, "sine", 0.10, 2));
+        oscillators.push(createOscillator(freq * 0.5, "sine", 0.08, -4));
+      } else if (voice === "ocarina") {
+        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.08);
+
+        filter.frequency.setValueAtTime(1200, now);
+
+        oscillators.push(createOscillator(freq, "triangle", 0.65));
+        oscillators.push(createOscillator(freq * 2, "sine", 0.08));
+      } else if (voice === "piano") {
+        mainGain.gain.exponentialRampToValueAtTime(0.26, now + 0.01);
+        mainGain.gain.exponentialRampToValueAtTime(0.08, now + 0.8);
+
+        filter.frequency.setValueAtTime(2200, now);
+
+        oscillators.push(createOscillator(freq, "triangle", 0.55));
+        oscillators.push(createOscillator(freq * 2, "sine", 0.18));
+        oscillators.push(createOscillator(freq * 3, "sine", 0.07));
+      } else if (voice === "guitar") {
+        mainGain.gain.exponentialRampToValueAtTime(0.24, now + 0.01);
+        mainGain.gain.exponentialRampToValueAtTime(0.04, now + 0.7);
+
+        filter.frequency.setValueAtTime(1800, now);
+
+        oscillators.push(createOscillator(freq, "triangle", 0.55));
+        oscillators.push(createOscillator(freq * 2, "sine", 0.12));
+      } else if (voice === "organ") {
+        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.04);
+
+        filter.frequency.setValueAtTime(1600, now);
+
+        oscillators.push(createOscillator(freq, "sine", 0.40));
+        oscillators.push(createOscillator(freq * 2, "triangle", 0.18));
+        oscillators.push(createOscillator(freq * 0.5, "sine", 0.10));
+      } else if (voice === "bell") {
+        mainGain.gain.exponentialRampToValueAtTime(0.22, now + 0.01);
+        mainGain.gain.exponentialRampToValueAtTime(0.05, now + 1.2);
+
+        filter.frequency.setValueAtTime(2600, now);
+
+        oscillators.push(createOscillator(freq, "sine", 0.42));
+        oscillators.push(createOscillator(freq * 2.4, "sine", 0.16));
+        oscillators.push(createOscillator(freq * 3.01, "sine", 0.08));
+      } else if (voice === "synth") {
+        mainGain.gain.linearRampToValueAtTime(0.17, now + 0.03);
+
+        filter.frequency.setValueAtTime(1400, now);
+
+        oscillators.push(createOscillator(freq, "sawtooth", 0.28));
+        oscillators.push(createOscillator(freq * 0.5, "square", 0.08));
+      } else if (voice === "pure") {
+        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
+
+        filter.frequency.setValueAtTime(1800, now);
+
+        oscillators.push(createOscillator(freq, "sine", 0.65));
+      } else {
+        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
+
+        filter.frequency.setValueAtTime(1500, now);
+
+        oscillators.push(createOscillator(freq, "triangle", 0.62));
+        oscillators.push(createOscillator(freq * 2, "sine", 0.08));
+      }
+
+      oscillators.forEach(({ osc, gain }) => {
+        osc.connect(filter);
+        gain.disconnect();
+        osc.connect(gain);
+        gain.connect(filter);
+        osc.start(now);
+      });
+
+      filter.connect(mainGain);
+      mainGain.connect(audioContext.destination);
+
+      activeNotes.set(pointerId, {
+        button,
+        oscillators: oscillators.map(item => item.osc),
+        gain: mainGain,
+        pc: button.dataset.pc,
+        name: button.dataset.name,
+        displayName: button.dataset.displayName,
+        midi: parseInt(button.dataset.midi, 10)
+      });
+
+      button.classList.add("active");
+
+      updateStatus();
+    }
+
+    function stopSustainedNote(pointerId) {
+      const note = activeNotes.get(pointerId);
+
+      if (!note || !audioContext) return;
+
+      const now = audioContext.currentTime;
+
+      note.gain.gain.cancelScheduledValues(now);
+      note.gain.gain.setValueAtTime(note.gain.gain.value, now);
+      note.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+      note.oscillators.forEach(osc => {
+        osc.stop(now + 0.14);
+      });
+
+      note.button.classList.remove("active");
+
+      activeNotes.delete(pointerId);
+
+      updateStatus();
+    }
+
+    function stopAllNotes() {
+      Array.from(activeNotes.keys()).forEach(pointerId => {
+        stopSustainedNote(pointerId);
+      });
+    }
+
+    function updateStatus() {
+      const notes = Array.from(activeNotes.values())
+        .sort((a, b) => a.midi - b.midi);
+
+      if (notes.length === 0) {
+        const { root, mode } = getSettingsFromUrl();
+
+        statusText.textContent =
+          displayNames[root] + " " + modeName(mode);
+
+        return;
+      }
+
+      if (notes.length >= 3) {
+        statusText.textContent =
+          nameChord(notes) + " Chord";
+      } else {
+        statusText.textContent =
+          notes.map(n => n.displayName).join(" – ");
+      }
+    }
+
+    function nameChord(notes) {
+      const pcs = [];
+      const pcSeen = new Set();
+
+      notes.forEach(note => {
+        if (!pcSeen.has(note.pc)) {
+          pcs.push(note.pc);
+          pcSeen.add(note.pc);
+        }
+      });
+
+      const numbers = pcs.map(pc => pcToNumber[pc]);
+      const lowestPc = notes[0].pc;
+
+      for (const rootPc of pcs) {
+        const root = pcToNumber[rootPc];
+
+        const has = interval =>
+          numbers.includes((root + interval) % 12);
+
+        const majorTriad = has(4) && has(7);
+        const minorTriad = has(3) && has(7);
+        const diminishedTriad = has(3) && has(6);
+
+        const major7 = has(11);
+        const dominant7 = has(10);
+
+        if (majorTriad) {
+          const rootName = getRootName(rootPc, notes);
+          const voicing = getVoicing(rootPc, lowestPc);
+
+          if (major7) return rootName + "Mv" + voicing + "7";
+          if (dominant7) return rootName + "Mv" + voicing + "D7";
+
+          return rootName + "Mv" + voicing;
+        }
+
+        if (minorTriad) {
+          const rootName = getRootName(rootPc, notes);
+          const voicing = getVoicing(rootPc, lowestPc);
+
+          return rootName + "mv" + voicing;
+        }
+
+        if (diminishedTriad) {
+          const rootName = getRootName(rootPc, notes);
+          const voicing = getVoicing(rootPc, lowestPc);
+
+          return rootName + "dimv" + voicing;
+        }
+      }
+
+      return pcs.join(" – ");
+    }
+
+    function getRootName(rootPc, notes) {
+      const matchingRootNotes = notes
+        .filter(note => note.pc === rootPc)
+        .sort((a, b) => a.midi - b.midi);
+
+      if (matchingRootNotes.length > 0) {
+        return matchingRootNotes[0].name;
+      }
+
+      return rootPc;
+    }
+
+    function getVoicing(rootPc, lowestPc) {
+      const root = pcToNumber[rootPc];
+      const lowest = pcToNumber[lowestPc];
+      const interval = (lowest - root + 12) % 12;
+
+      if (interval === 0) return "1";
+      if (interval === 3 || interval === 4) return "2";
+      if (interval === 6 || interval === 7) return "3";
+      if (interval === 10 || interval === 11) return "4";
+
+      return "1";
+    }
+
+    function attachSquareEvents(button) {
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+
+        if (!audioContext) {
+          statusText.textContent = "Tap Start Audio first";
+          return;
+        }
+
+        button.setPointerCapture(event.pointerId);
+
+        startSustainedNote(button, event.pointerId);
+      });
+
+      button.addEventListener("pointerup", event => {
+        event.preventDefault();
+
+        stopSustainedNote(event.pointerId);
+      });
+
+      button.addEventListener("pointercancel", event => {
+        stopSustainedNote(event.pointerId);
+      });
+    }
+
+    document.addEventListener("pointerup", event => {
+      stopSustainedNote(event.pointerId);
+    });
+
+    document.addEventListener("pointercancel", event => {
+      stopSustainedNote(event.pointerId);
+    });
+
+    buildGrid();
+  </script>
+
+</body>
+</html>
