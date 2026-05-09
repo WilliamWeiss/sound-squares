@@ -18,6 +18,9 @@
       overflow: hidden;
       touch-action: none;
       user-select: none;
+
+      --native-glow: rgba(255,255,255,0.98);
+      --outside-glow: rgba(150,150,150,0.5);
     }
 
     h1 { margin: 8px 0; }
@@ -107,14 +110,14 @@
 
     .native {
       box-shadow:
-        0 0 32px rgba(255,255,255,0.98),
+        0 0 32px var(--native-glow),
         0 6px 14px rgba(0,0,0,0.35);
       filter: brightness(1.25);
     }
 
     .outside {
       box-shadow:
-        0 0 14px rgba(150,150,150,0.5),
+        0 0 14px var(--outside-glow),
         0 6px 14px rgba(0,0,0,0.35);
       filter: brightness(0.72) saturate(0.65);
     }
@@ -128,7 +131,7 @@
       transform: scale(0.9);
       filter: brightness(1.65);
       box-shadow:
-        0 0 32px rgba(255,255,255,0.98),
+        0 0 34px var(--native-glow),
         0 6px 14px rgba(0,0,0,0.35);
     }
 
@@ -207,25 +210,64 @@
         M: [0, 2, 4, 5, 7, 9, 11],
         m: [0, 2, 3, 5, 7, 8, 10]
       },
-
       pentatonic: {
         M: [0, 2, 4, 7, 9],
         m: [0, 3, 5, 7, 10]
       },
-
       blues: {
         M: [0, 2, 3, 4, 7, 9],
         m: [0, 3, 5, 6, 7, 10]
       },
-
       modal: {
         M: [0, 2, 4, 5, 7, 9, 11],
         m: [0, 2, 3, 5, 7, 8, 10]
       },
-
       chromatic: {
         M: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
         m: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      }
+    };
+
+    const tintSettings = {
+      diatonicM: {
+        native: "rgba(255, 238, 170, 0.98)",
+        outside: "rgba(170, 160, 130, 0.45)"
+      },
+      diatonicm: {
+        native: "rgba(190, 215, 255, 0.98)",
+        outside: "rgba(120, 135, 160, 0.45)"
+      },
+      pentatonicM: {
+        native: "rgba(190, 255, 205, 0.98)",
+        outside: "rgba(115, 155, 125, 0.45)"
+      },
+      pentatonicm: {
+        native: "rgba(150, 220, 175, 0.98)",
+        outside: "rgba(95, 130, 105, 0.45)"
+      },
+      bluesM: {
+        native: "rgba(130, 170, 255, 0.98)",
+        outside: "rgba(70, 90, 150, 0.5)"
+      },
+      bluesm: {
+        native: "rgba(120, 145, 240, 0.98)",
+        outside: "rgba(70, 75, 130, 0.5)"
+      },
+      modalM: {
+        native: "rgba(220, 175, 255, 0.98)",
+        outside: "rgba(120, 85, 150, 0.5)"
+      },
+      modalm: {
+        native: "rgba(185, 155, 240, 0.98)",
+        outside: "rgba(100, 80, 140, 0.5)"
+      },
+      chromaticM: {
+        native: "rgba(235, 235, 235, 0.98)",
+        outside: "rgba(235, 235, 235, 0.98)"
+      },
+      chromaticm: {
+        native: "rgba(210, 210, 220, 0.98)",
+        outside: "rgba(210, 210, 220, 0.98)"
       }
     };
 
@@ -258,6 +300,23 @@
         setView: setView === "native" ? "native" : "full",
         octaves
       };
+    }
+
+    function applyTint(architecture, mode) {
+      const key = architecture + mode;
+      const tint =
+        tintSettings[key] ||
+        tintSettings.diatonicM;
+
+      document.body.style.setProperty(
+        "--native-glow",
+        tint.native
+      );
+
+      document.body.style.setProperty(
+        "--outside-glow",
+        tint.outside
+      );
     }
 
     function getSelectedFormula(architecture, mode) {
@@ -310,6 +369,8 @@
         setView,
         octaves
       } = getSettingsFromUrl();
+
+      applyTint(architecture, mode);
 
       const rootNumber = pcToNumber[root];
       const nativeFormula = getSelectedFormula(architecture, mode);
