@@ -105,17 +105,12 @@
       text-align: center;
     }
 
-.native {
-  box-shadow:
-    0 0 32px rgba(255,255,255,0.98),
-    0 6px 14px rgba(0,0,0,0.35);
-  filter: brightness(1.25);
-}
-
-.root {
-  outline: 3px solid rgba(255,255,255,1);
-  outline-offset: -5px;
-}
+    .native {
+      box-shadow:
+        0 0 32px rgba(255,255,255,0.98),
+        0 6px 14px rgba(0,0,0,0.35);
+      filter: brightness(1.25);
+    }
 
     .outside {
       box-shadow:
@@ -127,7 +122,6 @@
     .root {
       outline: 3px solid rgba(255,255,255,1);
       outline-offset: -5px;
-      filter: brightness(1.28);
     }
 
     .square.active {
@@ -208,9 +202,31 @@
       Gb: "gb", G: "g", Ab: "ab", A: "a", Bb: "bb", B: "b"
     };
 
-    const scaleFormulas = {
-      M: [0, 2, 4, 5, 7, 9, 11],
-      m: [0, 2, 3, 5, 7, 8, 10]
+    const architectureFormulas = {
+      diatonic: {
+        M: [0, 2, 4, 5, 7, 9, 11],
+        m: [0, 2, 3, 5, 7, 8, 10]
+      },
+
+      pentatonic: {
+        M: [0, 2, 4, 7, 9],
+        m: [0, 3, 5, 7, 10]
+      },
+
+      blues: {
+        M: [0, 2, 3, 4, 7, 9],
+        m: [0, 3, 5, 6, 7, 10]
+      },
+
+      modal: {
+        M: [0, 2, 4, 5, 7, 9, 11],
+        m: [0, 2, 3, 5, 7, 8, 10]
+      },
+
+      chromatic: {
+        M: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        m: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      }
     };
 
     function getSettingsFromUrl() {
@@ -218,6 +234,7 @@
 
       const root = params.get("root") || "C";
       const mode = params.get("mode") || "M";
+      const architecture = params.get("architecture") || "diatonic";
       const setView = params.get("set") || "full";
       const octavesParam = params.get("octaves") || "2,3,4,5";
 
@@ -234,14 +251,37 @@
 
       return {
         root: pcToNumber[root] !== undefined ? root : "C",
-        mode: scaleFormulas[mode] ? mode : "M",
+        mode: mode === "m" ? "m" : "M",
+        architecture: architectureFormulas[architecture]
+          ? architecture
+          : "diatonic",
         setView: setView === "native" ? "native" : "full",
         octaves
       };
     }
 
+    function getSelectedFormula(architecture, mode) {
+      const architectureSet =
+        architectureFormulas[architecture] ||
+        architectureFormulas.diatonic;
+
+      return architectureSet[mode] || architectureSet.M;
+    }
+
     function modeName(mode) {
       return mode === "M" ? "Major" : "Minor";
+    }
+
+    function architectureName(architecture) {
+      const names = {
+        diatonic: "Diatonic",
+        pentatonic: "Pentatonic",
+        blues: "Blues",
+        modal: "Modal",
+        chromatic: "Chromatic"
+      };
+
+      return names[architecture] || "Diatonic";
     }
 
     function viewName(setView) {
@@ -263,10 +303,17 @@
     function buildGrid() {
       stopAllNotes();
 
-      const { root, mode, setView, octaves } = getSettingsFromUrl();
+      const {
+        root,
+        mode,
+        architecture,
+        setView,
+        octaves
+      } = getSettingsFromUrl();
 
       const rootNumber = pcToNumber[root];
-      const scale = scaleFormulas[mode];
+      const nativeFormula = getSelectedFormula(architecture, mode);
+      const finalInterval = nativeFormula[nativeFormula.length - 1];
 
       grid.innerHTML = "";
 
@@ -275,7 +322,7 @@
         row.classList.add("octave-row");
 
         const startMidi = 12 * (octave + 1) + rootNumber;
-        const endMidi = startMidi + scale[6];
+        const endMidi = startMidi + finalInterval;
 
         const buttonsForRow = [];
 
@@ -283,7 +330,7 @@
           const pc = midiToPc(midi);
           const noteOctave = midiToOctave(midi);
           const intervalFromRoot = (midi - startMidi) % 12;
-          const isNative = scale.includes(intervalFromRoot);
+          const isNative = nativeFormula.includes(intervalFromRoot);
           const isRoot = intervalFromRoot === 0;
 
           if (setView === "native" && !isNative) {
@@ -324,6 +371,8 @@
         displayNames[root] +
         " " +
         modeName(mode) +
+        " · " +
+        architectureName(architecture) +
         " · " +
         viewName(setView) +
         " · Octaves " +
