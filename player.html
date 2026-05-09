@@ -273,6 +273,54 @@
       }
     };
 
+    const systemPresets = {
+      western: {
+        architecture: "diatonic",
+        mode: "M",
+        voice: "piano"
+      },
+      japanese: {
+        architecture: "pentatonic",
+        mode: "M",
+        voice: "koto"
+      },
+      chinese: {
+        architecture: "pentatonic",
+        mode: "M",
+        voice: "bell"
+      },
+      andean: {
+        architecture: "pentatonic",
+        mode: "M",
+        voice: "ocarina"
+      },
+      blues: {
+        architecture: "blues",
+        mode: "m",
+        voice: "guitar"
+      },
+      celtic: {
+        architecture: "pentatonic",
+        mode: "M",
+        voice: "warm"
+      },
+      indian: {
+        architecture: "modal",
+        mode: "M",
+        voice: "warm"
+      },
+      maqam: {
+        architecture: "modal",
+        mode: "m",
+        voice: "warm"
+      },
+      african: {
+        architecture: "pentatonic",
+        mode: "M",
+        voice: "warm"
+      }
+    };
+
     const allowedVoices = [
       "pure",
       "warm",
@@ -282,18 +330,21 @@
       "organ",
       "bell",
       "synth",
-      "choir"
+      "choir",
+      "koto"
     ];
 
     function getSettingsFromUrl() {
       const params = new URLSearchParams(window.location.search);
 
       const system = params.get("system") || "western";
+      const preset = systemPresets[system] || systemPresets.western;
+
       const root = params.get("root") || "C";
-      const mode = params.get("mode") || "M";
-      const architecture = params.get("architecture") || "diatonic";
-      const setView = params.get("set") || "full";
-      const voice = params.get("voice") || "warm";
+      const mode = params.get("mode") || preset.mode;
+      const architecture = params.get("architecture") || preset.architecture;
+      const setView = params.get("set") || "native";
+      const voice = params.get("voice") || preset.voice;
       const octavesParam = params.get("octaves") || "2,3,4,5";
 
       let octaves = octavesParam
@@ -313,9 +364,9 @@
         mode: mode === "m" ? "m" : "M",
         architecture: architectureFormulas[architecture]
           ? architecture
-          : "diatonic",
-        setView: setView === "native" ? "native" : "full",
-        voice: allowedVoices.includes(voice) ? voice : "warm",
+          : preset.architecture,
+        setView: setView === "full" ? "full" : "native",
+        voice: allowedVoices.includes(voice) ? voice : preset.voice,
         octaves
       };
     }
@@ -346,7 +397,8 @@
         organ: "Organ",
         bell: "Bell",
         synth: "Synth",
-        choir: "Choir"
+        choir: "Choir",
+        koto: "Koto"
       };
 
       return names[voice] || "Warm";
@@ -358,15 +410,8 @@
         tintSettings[key] ||
         tintSettings.diatonicM;
 
-      document.body.style.setProperty(
-        "--native-glow",
-        tint.native
-      );
-
-      document.body.style.setProperty(
-        "--outside-glow",
-        tint.outside
-      );
+      document.body.style.setProperty("--native-glow", tint.native);
+      document.body.style.setProperty("--outside-glow", tint.outside);
     }
 
     function getSelectedFormula(architecture, mode) {
@@ -476,7 +521,6 @@
           `repeat(${buttonsForRow.length}, minmax(0, 1fr))`;
 
         buttonsForRow.forEach(button => row.appendChild(button));
-
         grid.appendChild(row);
       });
 
@@ -562,7 +606,17 @@
 
       const oscillators = [];
 
-      if (voice === "choir") {
+      if (voice === "koto") {
+        mainGain.gain.exponentialRampToValueAtTime(0.30, now + 0.008);
+        mainGain.gain.exponentialRampToValueAtTime(0.035, now + 1.05);
+
+        filter.frequency.setValueAtTime(2600, now);
+        filter.frequency.exponentialRampToValueAtTime(900, now + 0.9);
+
+        oscillators.push(createOscillator(freq, "triangle", 0.62));
+        oscillators.push(createOscillator(freq * 2, "sine", 0.16));
+        oscillators.push(createOscillator(freq * 3, "sine", 0.06));
+      } else if (voice === "choir") {
         mainGain.gain.linearRampToValueAtTime(0.16, now + 0.45);
 
         filter.frequency.setValueAtTime(950, now);
