@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sound Squares Player</title>
+  <title>Orumi Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="orumi-catalog.js"></script>
 
   <style>
     body {
@@ -32,6 +34,7 @@
       font-weight: 700;
       letter-spacing: 0.04em;
       text-align: center;
+      max-width: 90vw;
     }
 
     #startButton {
@@ -52,6 +55,7 @@
       height: 26px;
       font-weight: 700;
       letter-spacing: 0.04em;
+      text-align: center;
     }
 
     .top-button {
@@ -156,7 +160,7 @@
   <a class="top-button back-button" href="index.html" title="Back">←</a>
   <a class="top-button settings-button" href="selection-control.html" title="Control Settings">⚙</a>
 
-  <h1 id="pageTitle">Sound Squares Player</h1>
+  <h1 id="pageTitle">Orumi Player</h1>
 
   <div id="gridLabel">Grid</div>
 
@@ -177,180 +181,46 @@
 
     const activeNotes = new Map();
 
-    const pcToNumber = {
-      C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5,
-      Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11
-    };
+    const pitchClasses = ORUMI_CATALOG.pitchClasses;
+    const numberToPitchClass = ORUMI_CATALOG.numberToPitchClass;
 
-    const numberToPc = [
-      "C", "Db", "D", "Eb", "E", "F",
-      "Gb", "G", "Ab", "A", "Bb", "B"
-    ];
+    function getUrlParams() {
+      return new URLSearchParams(window.location.search);
+    }
 
-    const displayNames = {
-      C:  "C",
-      Db: "C#/Db",
-      D:  "D",
-      Eb: "D#/Eb",
-      E:  "E",
-      F:  "F",
-      Gb: "F#/Gb",
-      G:  "G",
-      Ab: "G#/Ab",
-      A:  "A",
-      Bb: "A#/Bb",
-      B:  "B"
-    };
+    function getSystem(systemKey) {
+      return ORUMI_CATALOG.systems[systemKey] || ORUMI_CATALOG.systems.western;
+    }
 
-    const pcClass = {
-      C: "c", Db: "db", D: "d", Eb: "eb", E: "e", F: "f",
-      Gb: "gb", G: "g", Ab: "ab", A: "a", Bb: "bb", B: "b"
-    };
+    function getFamily(system, familyKey) {
+      return system.families[familyKey] ||
+        system.families[system.defaultFamily];
+    }
 
-    const architectureFormulas = {
-      diatonic: {
-        M: [0, 2, 4, 5, 7, 9, 11],
-        m: [0, 2, 3, 5, 7, 8, 10]
-      },
-      pentatonic: {
-        M: [0, 2, 4, 7, 9],
-        m: [0, 3, 5, 7, 10]
-      },
-      blues: {
-        M: [0, 2, 3, 4, 7, 9],
-        m: [0, 3, 5, 6, 7, 10]
-      },
-      modal: {
-        M: [0, 2, 4, 5, 7, 9, 11],
-        m: [0, 2, 3, 5, 7, 8, 10]
-      },
-      chromatic: {
-        M: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-        m: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-      }
-    };
-
-    const tintSettings = {
-      diatonicM: {
-        native: "rgba(255, 238, 170, 0.98)",
-        outside: "rgba(170, 160, 130, 0.45)"
-      },
-      diatonicm: {
-        native: "rgba(190, 215, 255, 0.98)",
-        outside: "rgba(120, 135, 160, 0.45)"
-      },
-      pentatonicM: {
-        native: "rgba(190, 255, 205, 0.98)",
-        outside: "rgba(115, 155, 125, 0.45)"
-      },
-      pentatonicm: {
-        native: "rgba(150, 220, 175, 0.98)",
-        outside: "rgba(95, 130, 105, 0.45)"
-      },
-      bluesM: {
-        native: "rgba(130, 170, 255, 0.98)",
-        outside: "rgba(70, 90, 150, 0.5)"
-      },
-      bluesm: {
-        native: "rgba(120, 145, 240, 0.98)",
-        outside: "rgba(70, 75, 130, 0.5)"
-      },
-      modalM: {
-        native: "rgba(220, 175, 255, 0.98)",
-        outside: "rgba(120, 85, 150, 0.5)"
-      },
-      modalm: {
-        native: "rgba(185, 155, 240, 0.98)",
-        outside: "rgba(100, 80, 140, 0.5)"
-      },
-      chromaticM: {
-        native: "rgba(235, 235, 235, 0.98)",
-        outside: "rgba(235, 235, 235, 0.98)"
-      },
-      chromaticm: {
-        native: "rgba(210, 210, 220, 0.98)",
-        outside: "rgba(210, 210, 220, 0.98)"
-      }
-    };
-
-    const systemPresets = {
-      western: {
-        architecture: "diatonic",
-        mode: "M",
-        voice: "piano"
-      },
-      japanese: {
-        architecture: "pentatonic",
-        mode: "M",
-        voice: "koto"
-      },
-      chinese: {
-        architecture: "pentatonic",
-        mode: "M",
-        voice: "bell"
-      },
-      andean: {
-        architecture: "pentatonic",
-        mode: "M",
-        voice: "ocarina"
-      },
-      blues: {
-        architecture: "blues",
-        mode: "m",
-        voice: "guitar"
-      },
-      celtic: {
-        architecture: "pentatonic",
-        mode: "M",
-        voice: "warm"
-      },
-      indian: {
-        architecture: "modal",
-        mode: "M",
-        voice: "warm"
-      },
-      maqam: {
-        architecture: "modal",
-        mode: "m",
-        voice: "warm"
-      },
-      african: {
-        architecture: "pentatonic",
-        mode: "M",
-        voice: "warm"
-      }
-    };
-
-    const allowedVoices = [
-      "pure",
-      "warm",
-      "ocarina",
-      "guitar",
-      "piano",
-      "organ",
-      "bell",
-      "synth",
-      "choir",
-      "koto"
-    ];
+    function getMode(family, modeKey) {
+      return family.modes[modeKey] ||
+        family.modes[Object.keys(family.modes)[0]];
+    }
 
     function getSettingsFromUrl() {
-      const params = new URLSearchParams(window.location.search);
+      const params = getUrlParams();
 
-      const system = params.get("system") || "western";
-      const preset = systemPresets[system] || systemPresets.western;
+      const systemKey = params.get("system") || "western";
+      const system = getSystem(systemKey);
 
-      const root = params.get("root") || "C";
-      const mode = params.get("mode") || preset.mode;
-      const architecture = params.get("architecture") || preset.architecture;
-      const setView = params.get("set") || "native";
-      const voice = params.get("voice") || preset.voice;
-      const octavesParam = params.get("octaves") || "2,3,4,5";
+      const root = params.get("root") || system.defaultRoot || "C";
+      const familyKey = params.get("family") || params.get("architecture") || system.defaultFamily;
+      const modeKey = params.get("scaleMode") || params.get("mode") || system.defaultMode;
+      const setView = params.get("set") || system.defaultSet || "native";
+      const voice = params.get("voice") || system.defaultVoice || "warm";
+      const octavesParam = params.get("octaves");
+
+      const family = getFamily(system, familyKey);
+      const mode = getMode(family, modeKey);
 
       let octaves = octavesParam
-        .split(",")
-        .map(value => parseInt(value, 10))
-        .filter(value => value >= 1 && value <= 6);
+        ? octavesParam.split(",").map(value => parseInt(value, 10)).filter(value => value >= 1 && value <= 6)
+        : [...(system.defaultOctaves || [2, 3, 4, 5])];
 
       if (octaves.length === 0) {
         octaves = [2, 3, 4, 5];
@@ -358,92 +228,33 @@
 
       octaves = [...new Set(octaves)].sort((a, b) => a - b);
 
+      const rootKey = pitchClasses[root] ? root : "C";
+      const voiceKey = ORUMI_CATALOG.voices[voice] ? voice : system.defaultVoice;
+
       return {
+        systemKey,
         system,
-        root: pcToNumber[root] !== undefined ? root : "C",
-        mode: mode === "m" ? "m" : "M",
-        architecture: architectureFormulas[architecture]
-          ? architecture
-          : preset.architecture,
+        root: rootKey,
+        familyKey,
+        family,
+        modeKey,
+        mode,
         setView: setView === "full" ? "full" : "native",
-        voice: allowedVoices.includes(voice) ? voice : preset.voice,
+        voice: voiceKey,
         octaves
       };
     }
 
-    function systemName(system) {
-      const names = {
-        western: "Western",
-        japanese: "Japanese",
-        chinese: "Chinese",
-        andean: "Andean",
-        indian: "Indian",
-        maqam: "Maqam",
-        celtic: "Celtic",
-        blues: "Blues",
-        african: "African"
-      };
-
-      return names[system] || "Western";
-    }
-
-    function voiceName(voice) {
-      const names = {
-        pure: "Pure",
-        warm: "Warm",
-        ocarina: "Ocarina",
-        guitar: "Guitar",
-        piano: "Piano",
-        organ: "Organ",
-        bell: "Bell",
-        synth: "Synth",
-        choir: "Choir",
-        koto: "Koto"
-      };
-
-      return names[voice] || "Warm";
-    }
-
-    function applyTint(architecture, mode) {
-      const key = architecture + mode;
-      const tint =
-        tintSettings[key] ||
-        tintSettings.diatonicM;
+    function applyTint(mode) {
+      const tintKey = mode.tint || "neutral";
+      const tint = ORUMI_CATALOG.tints[tintKey] || ORUMI_CATALOG.tints.neutral;
 
       document.body.style.setProperty("--native-glow", tint.native);
       document.body.style.setProperty("--outside-glow", tint.outside);
     }
 
-    function getSelectedFormula(architecture, mode) {
-      const architectureSet =
-        architectureFormulas[architecture] ||
-        architectureFormulas.diatonic;
-
-      return architectureSet[mode] || architectureSet.M;
-    }
-
-    function modeName(mode) {
-      return mode === "M" ? "Major" : "Minor";
-    }
-
-    function architectureName(architecture) {
-      const names = {
-        diatonic: "Diatonic",
-        pentatonic: "Pentatonic",
-        blues: "Blues",
-        modal: "Modal",
-        chromatic: "Chromatic"
-      };
-
-      return names[architecture] || "Diatonic";
-    }
-
-    function viewName(setView) {
-      return setView === "native" ? "Native Only" : "Full Set";
-    }
-
     function midiToPc(midi) {
-      return numberToPc[midi % 12];
+      return numberToPitchClass[midi % 12];
     }
 
     function midiToOctave(midi) {
@@ -460,17 +271,17 @@
       const {
         system,
         root,
+        family,
         mode,
-        architecture,
         setView,
         voice,
         octaves
       } = getSettingsFromUrl();
 
-      applyTint(architecture, mode);
+      applyTint(mode);
 
-      const rootNumber = pcToNumber[root];
-      const nativeFormula = getSelectedFormula(architecture, mode);
+      const rootNumber = pitchClasses[root].number;
+      const nativeFormula = mode.formula;
       const finalInterval = nativeFormula[nativeFormula.length - 1];
 
       grid.innerHTML = "";
@@ -486,6 +297,7 @@
 
         for (let midi = startMidi; midi <= endMidi; midi++) {
           const pc = midiToPc(midi);
+          const pitch = pitchClasses[pc];
           const noteOctave = midiToOctave(midi);
           const intervalFromRoot = (midi - startMidi) % 12;
           const isNative = nativeFormula.includes(intervalFromRoot);
@@ -498,7 +310,7 @@
           const button = document.createElement("button");
 
           button.classList.add("square");
-          button.classList.add(pcClass[pc]);
+          button.classList.add(pitch.className);
           button.classList.add(isNative ? "native" : "outside");
 
           if (isRoot) {
@@ -506,12 +318,12 @@
           }
 
           button.dataset.name = pc + noteOctave;
-          button.dataset.displayName = displayNames[pc] + noteOctave;
+          button.dataset.displayName = pitch.display + noteOctave;
           button.dataset.note = midiToFrequency(midi).toFixed(2);
           button.dataset.pc = pc;
           button.dataset.midi = midi;
 
-          button.textContent = displayNames[pc] + noteOctave;
+          button.textContent = pitch.display + noteOctave;
 
           attachSquareEvents(button);
           buttonsForRow.push(button);
@@ -524,24 +336,22 @@
         grid.appendChild(row);
       });
 
-      pageTitle.textContent =
-        systemName(system) + " Sound Square";
+      pageTitle.textContent = system.label + " Sound Square";
 
       gridLabel.textContent =
-        displayNames[root] +
-        " " +
-        modeName(mode) +
+        pitchClasses[root].display +
         " · " +
-        architectureName(architecture) +
+        family.label +
         " · " +
-        viewName(setView) +
+        mode.label +
+        " · " +
+        (setView === "native" ? "Native Only" : "Full Set") +
         " · Octaves " +
         octaves.join(", ") +
         " · " +
-        voiceName(voice);
+        ORUMI_CATALOG.voices[voice].label;
 
-      statusText.textContent =
-        displayNames[root] + " " + modeName(mode);
+      statusText.textContent = system.label + " Ready";
     }
 
     function startAudio() {
@@ -601,7 +411,6 @@
 
       filter.type = "lowpass";
       filter.frequency.setValueAtTime(1800, now);
-
       mainGain.gain.setValueAtTime(0.0001, now);
 
       const oscillators = [];
@@ -609,79 +418,78 @@
       if (voice === "koto") {
         mainGain.gain.exponentialRampToValueAtTime(0.30, now + 0.008);
         mainGain.gain.exponentialRampToValueAtTime(0.035, now + 1.05);
-
         filter.frequency.setValueAtTime(2600, now);
         filter.frequency.exponentialRampToValueAtTime(900, now + 0.9);
 
         oscillators.push(createOscillator(freq, "triangle", 0.62));
         oscillators.push(createOscillator(freq * 2, "sine", 0.16));
         oscillators.push(createOscillator(freq * 3, "sine", 0.06));
+
       } else if (voice === "choir") {
         mainGain.gain.linearRampToValueAtTime(0.16, now + 0.45);
-
         filter.frequency.setValueAtTime(950, now);
 
         oscillators.push(createOscillator(freq, "sine", 0.45, -7));
         oscillators.push(createOscillator(freq, "triangle", 0.32, 5));
         oscillators.push(createOscillator(freq * 2, "sine", 0.10, 2));
         oscillators.push(createOscillator(freq * 0.5, "sine", 0.08, -4));
+
       } else if (voice === "ocarina") {
         mainGain.gain.linearRampToValueAtTime(0.18, now + 0.08);
-
         filter.frequency.setValueAtTime(1200, now);
 
         oscillators.push(createOscillator(freq, "triangle", 0.65));
         oscillators.push(createOscillator(freq * 2, "sine", 0.08));
+
       } else if (voice === "piano") {
         mainGain.gain.exponentialRampToValueAtTime(0.26, now + 0.01);
         mainGain.gain.exponentialRampToValueAtTime(0.08, now + 0.8);
-
         filter.frequency.setValueAtTime(2200, now);
 
         oscillators.push(createOscillator(freq, "triangle", 0.55));
         oscillators.push(createOscillator(freq * 2, "sine", 0.18));
         oscillators.push(createOscillator(freq * 3, "sine", 0.07));
+
       } else if (voice === "guitar") {
         mainGain.gain.exponentialRampToValueAtTime(0.24, now + 0.01);
         mainGain.gain.exponentialRampToValueAtTime(0.04, now + 0.7);
-
         filter.frequency.setValueAtTime(1800, now);
 
         oscillators.push(createOscillator(freq, "triangle", 0.55));
         oscillators.push(createOscillator(freq * 2, "sine", 0.12));
+
       } else if (voice === "organ") {
         mainGain.gain.linearRampToValueAtTime(0.18, now + 0.04);
-
         filter.frequency.setValueAtTime(1600, now);
 
         oscillators.push(createOscillator(freq, "sine", 0.40));
         oscillators.push(createOscillator(freq * 2, "triangle", 0.18));
         oscillators.push(createOscillator(freq * 0.5, "sine", 0.10));
+
       } else if (voice === "bell") {
         mainGain.gain.exponentialRampToValueAtTime(0.22, now + 0.01);
         mainGain.gain.exponentialRampToValueAtTime(0.05, now + 1.2);
-
         filter.frequency.setValueAtTime(2600, now);
 
         oscillators.push(createOscillator(freq, "sine", 0.42));
         oscillators.push(createOscillator(freq * 2.4, "sine", 0.16));
         oscillators.push(createOscillator(freq * 3.01, "sine", 0.08));
+
       } else if (voice === "synth") {
         mainGain.gain.linearRampToValueAtTime(0.17, now + 0.03);
-
         filter.frequency.setValueAtTime(1400, now);
 
         oscillators.push(createOscillator(freq, "sawtooth", 0.28));
         oscillators.push(createOscillator(freq * 0.5, "square", 0.08));
+
       } else if (voice === "pure") {
         mainGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
-
         filter.frequency.setValueAtTime(1800, now);
 
         oscillators.push(createOscillator(freq, "sine", 0.65));
+
       } else {
         mainGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
-
         filter.frequency.setValueAtTime(1500, now);
 
         oscillators.push(createOscillator(freq, "triangle", 0.62));
@@ -710,7 +518,6 @@
       });
 
       button.classList.add("active");
-
       updateStatus();
     }
 
@@ -730,7 +537,6 @@
       });
 
       note.button.classList.remove("active");
-
       activeNotes.delete(pointerId);
 
       updateStatus();
@@ -747,20 +553,15 @@
         .sort((a, b) => a.midi - b.midi);
 
       if (notes.length === 0) {
-        const { root, mode } = getSettingsFromUrl();
-
-        statusText.textContent =
-          displayNames[root] + " " + modeName(mode);
-
+        const { system } = getSettingsFromUrl();
+        statusText.textContent = system.label + " Ready";
         return;
       }
 
       if (notes.length >= 3) {
-        statusText.textContent =
-          nameChord(notes) + " Chord";
+        statusText.textContent = nameChord(notes) + " Chord";
       } else {
-        statusText.textContent =
-          notes.map(n => n.displayName).join(" – ");
+        statusText.textContent = notes.map(n => n.displayName).join(" – ");
       }
     }
 
@@ -775,11 +576,11 @@
         }
       });
 
-      const numbers = pcs.map(pc => pcToNumber[pc]);
+      const numbers = pcs.map(pc => pitchClasses[pc].number);
       const lowestPc = notes[0].pc;
 
       for (const rootPc of pcs) {
-        const root = pcToNumber[rootPc];
+        const root = pitchClasses[rootPc].number;
 
         const has = interval =>
           numbers.includes((root + interval) % 12);
@@ -832,8 +633,8 @@
     }
 
     function getVoicing(rootPc, lowestPc) {
-      const root = pcToNumber[rootPc];
-      const lowest = pcToNumber[lowestPc];
+      const root = pitchClasses[rootPc].number;
+      const lowest = pitchClasses[lowestPc].number;
       const interval = (lowest - root + 12) % 12;
 
       if (interval === 0) return "1";
@@ -854,13 +655,11 @@
         }
 
         button.setPointerCapture(event.pointerId);
-
         startSustainedNote(button, event.pointerId);
       });
 
       button.addEventListener("pointerup", event => {
         event.preventDefault();
-
         stopSustainedNote(event.pointerId);
       });
 

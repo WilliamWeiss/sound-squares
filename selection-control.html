@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sound Squares Control</title>
+  <title>Orumi Selection Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="orumi-catalog.js"></script>
 
   <style>
     body {
@@ -70,43 +72,35 @@
       text-align: center;
     }
 
+    .grid {
+      display: grid;
+      width: min(92vmin, 680px);
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .system-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
     .key-grid {
-      display: grid;
-      width: min(92vmin, 620px);
       grid-template-columns: repeat(6, 1fr);
-      gap: 10px;
-      margin-bottom: 8px;
     }
 
-    .mode-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      width: min(92vmin, 320px);
-      margin-bottom: 8px;
-    }
-
-    .architecture-grid {
-      display: grid;
-      width: min(92vmin, 620px);
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-bottom: 8px;
+    .family-grid,
+    .mode-grid,
+    .voice-grid {
+      grid-template-columns: repeat(3, 1fr);
     }
 
     .tone-grid {
-      display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
       width: min(92vmin, 420px);
-      margin-bottom: 8px;
     }
 
     .octave-grid {
-      display: grid;
-      width: min(92vmin, 520px);
       grid-template-columns: repeat(6, 1fr);
-      gap: 10px;
+      width: min(92vmin, 520px);
       margin-bottom: 20px;
     }
 
@@ -114,14 +108,16 @@
       border: none;
       border-radius: 16px;
       min-height: 72px;
-      font-size: clamp(12px, 2.3vmin, 18px);
+      font-size: clamp(11px, 2.2vmin, 18px);
       font-weight: bold;
       color: white;
+      background: #333;
       box-shadow: 0 6px 14px rgba(0,0,0,0.35);
       transition: 0.12s;
       cursor: pointer;
       text-align: center;
       padding: 6px;
+      line-height: 1.15;
     }
 
     .square.selected {
@@ -134,42 +130,24 @@
         0 6px 14px rgba(0,0,0,0.35);
     }
 
-    .major-square {
-      background: #fff6c9;
-      color: #222;
+    .system-square {
+      background: #2f3542;
     }
 
-    .minor-square {
-      background: #444;
-      color: white;
+    .family-square {
+      background: #3a4658;
     }
 
-    .architecture-square {
-      color: white;
-    }
-
-    .diatonic {
-      background: #4d6f91;
-    }
-
-    .pentatonic {
-      background: #4f6f5d;
-    }
-
-    .blues {
-      background: #3f4e6f;
-    }
-
-    .modal {
-      background: #5b4a6b;
-    }
-
-    .chromatic {
-      background: #666;
+    .mode-square {
+      background: #3b3b50;
     }
 
     .tone-square {
       background: #2c2c2c;
+    }
+
+    .voice-square {
+      background: #38444a;
     }
 
     .octave-square {
@@ -235,172 +213,146 @@
 
   <a class="back-button" href="index.html">←</a>
 
-  <h1>Sound Squares Control</h1>
+  <h1>Orumi Selection Control</h1>
 
   <div class="subtitle">
-    Choose a root, modality, architecture, tone visibility, and octave range.
+    Choose a system, root, scale family, mode, tone visibility, octaves, and voice.
   </div>
+
+  <div class="section-title">System</div>
+  <div class="grid system-grid" id="systemGrid"></div>
 
   <div class="section-title">Root</div>
-  <div class="key-grid" id="keyGrid"></div>
+  <div class="grid key-grid" id="keyGrid"></div>
 
-  <div class="section-title">Modality</div>
+  <div class="section-title">Scale Family</div>
+  <div class="grid family-grid" id="familyGrid"></div>
 
-  <div class="mode-grid">
-    <button class="square major-square selected" id="majorButton">
-      Major
-    </button>
-
-    <button class="square minor-square" id="minorButton">
-      Minor
-    </button>
-  </div>
-
-  <div class="section-title">Architecture</div>
-
-  <div class="architecture-grid">
-    <button
-      class="square architecture-square diatonic selected"
-      data-architecture="diatonic">
-      Diatonic
-    </button>
-
-    <button
-      class="square architecture-square pentatonic"
-      data-architecture="pentatonic">
-      Pentatonic
-    </button>
-
-    <button
-      class="square architecture-square blues"
-      data-architecture="blues">
-      Blues
-    </button>
-
-    <button
-      class="square architecture-square modal"
-      data-architecture="modal">
-      Modal
-    </button>
-
-    <button
-      class="square architecture-square chromatic"
-      data-architecture="chromatic">
-      Chromatic
-    </button>
-  </div>
+  <div class="section-title">Specific Mode</div>
+  <div class="grid mode-grid" id="modeGrid"></div>
 
   <div class="section-title">Tone Display</div>
-
-  <div class="tone-grid">
-    <button
-      class="square tone-square selected"
-      data-set="native">
+  <div class="grid tone-grid" id="toneGrid">
+    <button class="square tone-square selected" data-set="native">
       Native Only
     </button>
 
-    <button
-      class="square tone-square"
-      data-set="full">
+    <button class="square tone-square" data-set="full">
       Full Set
     </button>
   </div>
 
   <div class="section-title">Visible Octaves</div>
-
-  <div class="octave-grid">
+  <div class="grid octave-grid" id="octaveGrid">
     <button class="square octave-square" data-octave="1">1</button>
-
     <button class="square octave-square selected" data-octave="2">2</button>
-
     <button class="square octave-square selected" data-octave="3">3</button>
-
     <button class="square octave-square selected" data-octave="4">4</button>
-
     <button class="square octave-square selected" data-octave="5">5</button>
-
     <button class="square octave-square" data-octave="6">6</button>
   </div>
 
+  <div class="section-title">Voice</div>
+  <div class="grid voice-grid" id="voiceGrid"></div>
+
   <div class="apply-bar">
-
-    <div id="selectionLabel">
-      C Major · Diatonic · Native Only · Octaves 2,3,4,5
-    </div>
-
+    <div id="selectionLabel"></div>
     <button id="enterButton">Enter Grid</button>
-
   </div>
 
   <script>
+    const systemGrid = document.getElementById("systemGrid");
     const keyGrid = document.getElementById("keyGrid");
-    const selectionLabel =
-      document.getElementById("selectionLabel");
+    const familyGrid = document.getElementById("familyGrid");
+    const modeGrid = document.getElementById("modeGrid");
+    const voiceGrid = document.getElementById("voiceGrid");
+    const selectionLabel = document.getElementById("selectionLabel");
+    const enterButton = document.getElementById("enterButton");
 
-    const enterButton =
-      document.getElementById("enterButton");
+    const catalog = ORUMI_CATALOG;
+    const systems = catalog.systems;
+    const pitchClasses = catalog.pitchClasses;
+    const voices = catalog.voices;
 
-    const majorButton =
-      document.getElementById("majorButton");
+    let selectedSystemKey = "western";
+    let selectedRoot = systems.western.defaultRoot;
+    let selectedFamilyKey = systems.western.defaultFamily;
+    let selectedModeKey = systems.western.defaultMode;
+    let selectedSet = systems.western.defaultSet || "native";
+    let selectedOctaves = [...systems.western.defaultOctaves];
+    let selectedVoice = systems.western.defaultVoice;
 
-    const minorButton =
-      document.getElementById("minorButton");
+    function currentSystem() {
+      return systems[selectedSystemKey] || systems.western;
+    }
 
-    let selectedRoot = "C";
-    let selectedMode = "M";
-    let selectedArchitecture = "diatonic";
-    let selectedSet = "native";
-    let selectedOctaves = [2,3,4,5];
+    function currentFamily() {
+      const system = currentSystem();
 
-    const displayNames = {
-      C:  "C",
-      Db: "C#/Db",
-      D:  "D",
-      Eb: "D#/Eb",
-      E:  "E",
-      F:  "F",
-      Gb: "F#/Gb",
-      G:  "G",
-      Ab: "G#/Ab",
-      A:  "A",
-      Bb: "A#/Bb",
-      B:  "B"
-    };
+      return system.families[selectedFamilyKey] ||
+        system.families[system.defaultFamily];
+    }
 
-    const notes = [
-      { name: "C",  className: "c"  },
-      { name: "Db", className: "db" },
-      { name: "D",  className: "d"  },
-      { name: "Eb", className: "eb" },
-      { name: "E",  className: "e"  },
-      { name: "F",  className: "f"  },
-      { name: "Gb", className: "gb" },
-      { name: "G",  className: "g"  },
-      { name: "Ab", className: "ab" },
-      { name: "A",  className: "a"  },
-      { name: "Bb", className: "bb" },
-      { name: "B",  className: "b"  }
-    ];
+    function currentMode() {
+      const family = currentFamily();
+
+      return family.modes[selectedModeKey] ||
+        family.modes[Object.keys(family.modes)[0]];
+    }
+
+    function buildSystemGrid() {
+      systemGrid.innerHTML = "";
+
+      Object.entries(systems).forEach(([key, system]) => {
+        const button = document.createElement("button");
+
+        button.classList.add("square");
+        button.classList.add("system-square");
+
+        if (key === selectedSystemKey) {
+          button.classList.add("selected");
+        }
+
+        button.dataset.system = key;
+        button.textContent = system.label;
+
+        button.addEventListener("click", () => {
+          selectedSystemKey = key;
+
+          const newSystem = currentSystem();
+
+          selectedRoot = newSystem.defaultRoot || "C";
+          selectedFamilyKey = newSystem.defaultFamily;
+          selectedModeKey = newSystem.defaultMode;
+          selectedSet = newSystem.defaultSet || "native";
+          selectedOctaves = [...(newSystem.defaultOctaves || [2,3,4,5])];
+          selectedVoice = newSystem.defaultVoice || "warm";
+
+          buildAll();
+        });
+
+        systemGrid.appendChild(button);
+      });
+    }
 
     function buildKeyGrid() {
       keyGrid.innerHTML = "";
 
-      notes.forEach(note => {
+      Object.entries(pitchClasses).forEach(([key, pitch]) => {
         const button = document.createElement("button");
 
         button.classList.add("square");
-        button.classList.add(note.className);
+        button.classList.add(pitch.className);
 
-        if (note.name === selectedRoot) {
+        if (key === selectedRoot) {
           button.classList.add("selected");
         }
 
-        button.dataset.root = note.name;
-        button.textContent = displayNames[note.name];
+        button.dataset.root = key;
+        button.textContent = pitch.display;
 
         button.addEventListener("click", () => {
-          selectedRoot = note.name;
-
+          selectedRoot = key;
           buildKeyGrid();
           updateSelectionLabel();
         });
@@ -409,184 +361,193 @@
       });
     }
 
-    function updateModeButtons() {
-      majorButton.classList.toggle(
-        "selected",
-        selectedMode === "M"
-      );
+    function buildFamilyGrid() {
+      familyGrid.innerHTML = "";
 
-      minorButton.classList.toggle(
-        "selected",
-        selectedMode === "m"
-      );
+      const families = currentSystem().families;
+
+      Object.entries(families).forEach(([key, family]) => {
+        const button = document.createElement("button");
+
+        button.classList.add("square");
+        button.classList.add("family-square");
+
+        if (key === selectedFamilyKey) {
+          button.classList.add("selected");
+        }
+
+        button.dataset.family = key;
+        button.textContent = family.label;
+
+        button.addEventListener("click", () => {
+          selectedFamilyKey = key;
+
+          const newFamily = currentFamily();
+          selectedModeKey = Object.keys(newFamily.modes)[0];
+
+          buildFamilyGrid();
+          buildModeGrid();
+          updateSelectionLabel();
+        });
+
+        familyGrid.appendChild(button);
+      });
     }
 
-    function updateArchitectureButtons() {
-      document
-        .querySelectorAll(".architecture-square")
-        .forEach(button => {
+    function buildModeGrid() {
+      modeGrid.innerHTML = "";
 
-          button.classList.toggle(
-            "selected",
-            button.dataset.architecture ===
-              selectedArchitecture
-          );
+      const modes = currentFamily().modes;
+
+      Object.entries(modes).forEach(([key, mode]) => {
+        const button = document.createElement("button");
+
+        button.classList.add("square");
+        button.classList.add("mode-square");
+
+        if (key === selectedModeKey) {
+          button.classList.add("selected");
+        }
+
+        button.dataset.mode = key;
+        button.textContent = mode.shortLabel || mode.label;
+
+        button.addEventListener("click", () => {
+          selectedModeKey = key;
+
+          buildModeGrid();
+          updateSelectionLabel();
         });
+
+        modeGrid.appendChild(button);
+      });
     }
 
     function updateToneButtons() {
-      document
-        .querySelectorAll(".tone-square")
-        .forEach(button => {
-
-          button.classList.toggle(
-            "selected",
-            button.dataset.set === selectedSet
-          );
-        });
+      document.querySelectorAll(".tone-square").forEach(button => {
+        button.classList.toggle(
+          "selected",
+          button.dataset.set === selectedSet
+        );
+      });
     }
 
     function updateOctaveButtons() {
-      document
-        .querySelectorAll(".octave-square")
-        .forEach(button => {
+      document.querySelectorAll(".octave-square").forEach(button => {
+        const octave = parseInt(button.dataset.octave, 10);
 
-          const octave =
-            parseInt(button.dataset.octave, 10);
+        button.classList.toggle(
+          "selected",
+          selectedOctaves.includes(octave)
+        );
+      });
+    }
 
-          button.classList.toggle(
-            "selected",
-            selectedOctaves.includes(octave)
-          );
+    function buildVoiceGrid() {
+      voiceGrid.innerHTML = "";
+
+      Object.entries(voices).forEach(([key, voice]) => {
+        const button = document.createElement("button");
+
+        button.classList.add("square");
+        button.classList.add("voice-square");
+
+        if (key === selectedVoice) {
+          button.classList.add("selected");
+        }
+
+        button.dataset.voice = key;
+        button.textContent = voice.label;
+
+        button.addEventListener("click", () => {
+          selectedVoice = key;
+
+          buildVoiceGrid();
+          updateSelectionLabel();
         });
+
+        voiceGrid.appendChild(button);
+      });
     }
 
-    function architectureName(value) {
-      const names = {
-        diatonic: "Diatonic",
-        pentatonic: "Pentatonic",
-        blues: "Blues",
-        modal: "Modal",
-        chromatic: "Chromatic"
-      };
+    document.querySelectorAll(".tone-square").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedSet = button.dataset.set;
 
-      return names[value] || value;
-    }
+        updateToneButtons();
+        updateSelectionLabel();
+      });
+    });
 
-    function modeName(mode) {
-      return mode === "M"
-        ? "Major"
-        : "Minor";
-    }
+    document.querySelectorAll(".octave-square").forEach(button => {
+      button.addEventListener("click", () => {
+        const octave = parseInt(button.dataset.octave, 10);
+
+        if (selectedOctaves.includes(octave)) {
+          selectedOctaves = selectedOctaves.filter(o => o !== octave);
+        } else {
+          selectedOctaves.push(octave);
+        }
+
+        selectedOctaves.sort((a, b) => a - b);
+
+        if (selectedOctaves.length === 0) {
+          selectedOctaves = [...(currentSystem().defaultOctaves || [2,3,4,5])];
+        }
+
+        updateOctaveButtons();
+        updateSelectionLabel();
+      });
+    });
 
     function updateSelectionLabel() {
+      const system = currentSystem();
+      const family = currentFamily();
+      const mode = currentMode();
+      const pitch = pitchClasses[selectedRoot];
+      const voice = voices[selectedVoice];
+
       selectionLabel.textContent =
-        displayNames[selectedRoot] +
-        " " +
-        modeName(selectedMode) +
+        system.label +
         " · " +
-        architectureName(selectedArchitecture) +
+        pitch.display +
         " · " +
-        (selectedSet === "native"
-          ? "Native Only"
-          : "Full Set") +
+        family.label +
+        " · " +
+        mode.label +
+        " · " +
+        (selectedSet === "native" ? "Native Only" : "Full Set") +
         " · Octaves " +
-        selectedOctaves.join(",");
+        selectedOctaves.join(",") +
+        " · " +
+        voice.label;
     }
 
-    majorButton.addEventListener("click", () => {
-      selectedMode = "M";
-
-      updateModeButtons();
-      updateSelectionLabel();
-    });
-
-    minorButton.addEventListener("click", () => {
-      selectedMode = "m";
-
-      updateModeButtons();
-      updateSelectionLabel();
-    });
-
-    document
-      .querySelectorAll(".architecture-square")
-      .forEach(button => {
-
-        button.addEventListener("click", () => {
-          selectedArchitecture =
-            button.dataset.architecture;
-
-          updateArchitectureButtons();
-          updateSelectionLabel();
-        });
-      });
-
-    document
-      .querySelectorAll(".tone-square")
-      .forEach(button => {
-
-        button.addEventListener("click", () => {
-          selectedSet = button.dataset.set;
-
-          updateToneButtons();
-          updateSelectionLabel();
-        });
-      });
-
-    document
-      .querySelectorAll(".octave-square")
-      .forEach(button => {
-
-        button.addEventListener("click", () => {
-
-          const octave =
-            parseInt(button.dataset.octave, 10);
-
-          if (selectedOctaves.includes(octave)) {
-            selectedOctaves =
-              selectedOctaves.filter(o => o !== octave);
-          } else {
-            selectedOctaves.push(octave);
-          }
-
-          selectedOctaves.sort((a,b) => a - b);
-
-          if (selectedOctaves.length === 0) {
-            selectedOctaves = [2,3,4,5];
-          }
-
-          updateOctaveButtons();
-          updateSelectionLabel();
-        });
-      });
-
     enterButton.addEventListener("click", () => {
-
-      const root =
-        encodeURIComponent(selectedRoot);
-
-      const mode =
-        encodeURIComponent(selectedMode);
-
-      const architecture =
-        encodeURIComponent(selectedArchitecture);
-
-      const setView =
-        encodeURIComponent(selectedSet);
-
-      const octaves =
-        encodeURIComponent(selectedOctaves.join(","));
+      const system = encodeURIComponent(selectedSystemKey);
+      const root = encodeURIComponent(selectedRoot);
+      const family = encodeURIComponent(selectedFamilyKey);
+      const scaleMode = encodeURIComponent(selectedModeKey);
+      const setView = encodeURIComponent(selectedSet);
+      const octaves = encodeURIComponent(selectedOctaves.join(","));
+      const voice = encodeURIComponent(selectedVoice);
 
       window.location.href =
-        `western.html?root=${root}&mode=${mode}&architecture=${architecture}&set=${setView}&octaves=${octaves}`;
+        `player.html?system=${system}&root=${root}&family=${family}&scaleMode=${scaleMode}&set=${setView}&octaves=${octaves}&voice=${voice}`;
     });
 
-    buildKeyGrid();
-    updateModeButtons();
-    updateArchitectureButtons();
-    updateToneButtons();
-    updateOctaveButtons();
-    updateSelectionLabel();
+    function buildAll() {
+      buildSystemGrid();
+      buildKeyGrid();
+      buildFamilyGrid();
+      buildModeGrid();
+      updateToneButtons();
+      updateOctaveButtons();
+      buildVoiceGrid();
+      updateSelectionLabel();
+    }
+
+    buildAll();
   </script>
 
 </body>
