@@ -62,24 +62,70 @@
       filter: brightness(1.08);
     }
 
-    .section-title {
-      color: #ddd;
-      font-size: 14px;
+    .accordion {
+      width: min(92vmin, 720px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .panel {
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      width: 100%;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 15px;
+      text-align: left;
+    }
+
+    .panel-current {
+      color: #ccc;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      margin: 18px 0 10px;
-      text-transform: uppercase;
-      text-align: center;
+      font-size: 13px;
+      margin-left: 10px;
+      text-align: right;
+    }
+
+    .panel-arrow {
+      margin-left: 10px;
+      transition: 0.15s;
+    }
+
+    .panel.open .panel-arrow {
+      transform: rotate(180deg);
+    }
+
+    .panel-content {
+      display: none;
+      padding: 12px;
+    }
+
+    .panel.open .panel-content {
+      display: block;
     }
 
     .grid {
       display: grid;
-      width: min(92vmin, 680px);
       gap: 10px;
-      margin-bottom: 8px;
     }
 
-    .system-grid {
+    .system-grid,
+    .family-grid,
+    .mode-grid,
+    .voice-grid {
       grid-template-columns: repeat(3, 1fr);
     }
 
@@ -87,21 +133,12 @@
       grid-template-columns: repeat(6, 1fr);
     }
 
-    .family-grid,
-    .mode-grid,
-    .voice-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
     .tone-grid {
       grid-template-columns: repeat(2, 1fr);
-      width: min(92vmin, 420px);
     }
 
     .octave-grid {
       grid-template-columns: repeat(6, 1fr);
-      width: min(92vmin, 520px);
-      margin-bottom: 20px;
     }
 
     .square {
@@ -130,29 +167,12 @@
         0 6px 14px rgba(0,0,0,0.35);
     }
 
-    .system-square {
-      background: #2f3542;
-    }
-
-    .family-square {
-      background: #3a4658;
-    }
-
-    .mode-square {
-      background: #3b3b50;
-    }
-
-    .tone-square {
-      background: #2c2c2c;
-    }
-
-    .voice-square {
-      background: #38444a;
-    }
-
-    .octave-square {
-      background: #3b3b3b;
-    }
+    .system-square { background: #2f3542; }
+    .family-square { background: #3a4658; }
+    .mode-square { background: #3b3b50; }
+    .tone-square { background: #2c2c2c; }
+    .voice-square { background: #38444a; }
+    .octave-square { background: #3b3b3b; }
 
     .apply-bar {
       position: sticky;
@@ -170,6 +190,7 @@
       align-items: center;
       gap: 10px;
       z-index: 900;
+      margin-top: 18px;
     }
 
     #selectionLabel {
@@ -216,44 +237,113 @@
   <h1>Orumi Selection Control</h1>
 
   <div class="subtitle">
-    Choose a system, root, scale family, mode, tone visibility, octaves, and voice.
+    Adjust the musical world, scale, display, octaves, and voice.
   </div>
 
-  <div class="section-title">System</div>
-  <div class="grid system-grid" id="systemGrid"></div>
+  <div class="accordion">
 
-  <div class="section-title">Root</div>
-  <div class="grid key-grid" id="keyGrid"></div>
+    <div class="panel open" id="systemPanel">
+      <button class="panel-header" data-panel="systemPanel">
+        <span>System</span>
+        <span>
+          <span class="panel-current" id="systemCurrent"></span>
+          <span class="panel-arrow">⌄</span>
+        </span>
+      </button>
+      <div class="panel-content">
+        <div class="grid system-grid" id="systemGrid"></div>
+      </div>
+    </div>
 
-  <div class="section-title">Scale Family</div>
-  <div class="grid family-grid" id="familyGrid"></div>
+    <div class="panel" id="rootPanel">
+      <button class="panel-header" data-panel="rootPanel">
+        <span>Root</span>
+        <span>
+          <span class="panel-current" id="rootCurrent"></span>
+          <span class="panel-arrow">⌄</span>
+        </span>
+      </button>
+      <div class="panel-content">
+        <div class="grid key-grid" id="keyGrid"></div>
+      </div>
+    </div>
 
-  <div class="section-title">Specific Mode</div>
-  <div class="grid mode-grid" id="modeGrid"></div>
+    <div class="panel" id="familyPanel">
+      <button class="panel-header" data-panel="familyPanel">
+        <span>Scale Family</span>
+        <span>
+          <span class="panel-current" id="familyCurrent"></span>
+          <span class="panel-arrow">⌄</span>
+        </span>
+      </button>
+      <div class="panel-content">
+        <div class="grid family-grid" id="familyGrid"></div>
+      </div>
+    </div>
 
-  <div class="section-title">Tone Display</div>
-  <div class="grid tone-grid" id="toneGrid">
-    <button class="square tone-square selected" data-set="native">
-      Native Only
-    </button>
+    <div class="panel" id="modePanel">
+      <button class="panel-header" data-panel="modePanel">
+        <span>Specific Mode</span>
+        <span>
+          <span class="panel-current" id="modeCurrent"></span>
+          <span class="panel-arrow">⌄</span>
+        </span>
+      </button>
+      <div class="panel-content">
+        <div class="grid mode-grid" id="modeGrid"></div>
+      </div>
+    </div>
 
-    <button class="square tone-square" data-set="full">
-      Full Set
-    </button>
+    <div class="panel" id="tonePanel">
+      <button class="panel-header" data-panel="tonePanel">
+        <span>Tone Display</span>
+        <span>
+          <span class="panel-current" id="toneCurrent"></span>
+          <span class="panel-arrow">⌄</span>
+        </span>
+      </button>
+      <div class="panel-content">
+        <div class="grid tone-grid" id="toneGrid">
+          <button class="square tone-square selected" data-set="native">Native Only</button>
+          <button class="square tone-square" data-set="full">Full Set</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="octavePanel">
+      <button class="panel-header" data-panel="octavePanel">
+        <span>Visible Octaves</span>
+        <span>
+          <span class="panel-current" id="octaveCurrent"></span>
+          <span class="panel-arrow">⌄</span>
+        </span>
+      </button>
+      <div class="panel-content">
+        <div class="grid octave-grid" id="octaveGrid">
+          <button class="square octave-square" data-octave="1">1</button>
+          <button class="square octave-square selected" data-octave="2">2</button>
+          <button class="square octave-square selected" data-octave="3">3</button>
+          <button class="square octave-square selected" data-octave="4">4</button>
+          <button class="square octave-square selected" data-octave="5">5</button>
+          <button class="square octave-square" data-octave="6">6</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="voicePanel">
+      <button class="panel-header" data-panel="voicePanel">
+        <span>Voice</span>
+        <span>
+          <span class="panel-current" id="voiceCurrent"></span>
+          <span class="panel-arrow">⌄</span>
+        </span>
+      </button>
+      <div class="panel-content">
+        <div class="grid voice-grid" id="voiceGrid"></div>
+      </div>
+    </div>
+
   </div>
-
-  <div class="section-title">Visible Octaves</div>
-  <div class="grid octave-grid" id="octaveGrid">
-    <button class="square octave-square" data-octave="1">1</button>
-    <button class="square octave-square selected" data-octave="2">2</button>
-    <button class="square octave-square selected" data-octave="3">3</button>
-    <button class="square octave-square selected" data-octave="4">4</button>
-    <button class="square octave-square selected" data-octave="5">5</button>
-    <button class="square octave-square" data-octave="6">6</button>
-  </div>
-
-  <div class="section-title">Voice</div>
-  <div class="grid voice-grid" id="voiceGrid"></div>
 
   <div class="apply-bar">
     <div id="selectionLabel"></div>
@@ -261,6 +351,11 @@
   </div>
 
   <script>
+    const catalog = ORUMI_CATALOG;
+    const systems = catalog.systems;
+    const pitchClasses = catalog.pitchClasses;
+    const voices = catalog.voices;
+
     const systemGrid = document.getElementById("systemGrid");
     const keyGrid = document.getElementById("keyGrid");
     const familyGrid = document.getElementById("familyGrid");
@@ -269,10 +364,13 @@
     const selectionLabel = document.getElementById("selectionLabel");
     const enterButton = document.getElementById("enterButton");
 
-    const catalog = ORUMI_CATALOG;
-    const systems = catalog.systems;
-    const pitchClasses = catalog.pitchClasses;
-    const voices = catalog.voices;
+    const systemCurrent = document.getElementById("systemCurrent");
+    const rootCurrent = document.getElementById("rootCurrent");
+    const familyCurrent = document.getElementById("familyCurrent");
+    const modeCurrent = document.getElementById("modeCurrent");
+    const toneCurrent = document.getElementById("toneCurrent");
+    const octaveCurrent = document.getElementById("octaveCurrent");
+    const voiceCurrent = document.getElementById("voiceCurrent");
 
     let selectedSystemKey = "western";
     let selectedRoot = systems.western.defaultRoot;
@@ -282,20 +380,25 @@
     let selectedOctaves = [...systems.western.defaultOctaves];
     let selectedVoice = systems.western.defaultVoice;
 
+    document.querySelectorAll(".panel-header").forEach(header => {
+      header.addEventListener("click", () => {
+        const panel = document.getElementById(header.dataset.panel);
+        panel.classList.toggle("open");
+      });
+    });
+
     function currentSystem() {
       return systems[selectedSystemKey] || systems.western;
     }
 
     function currentFamily() {
       const system = currentSystem();
-
       return system.families[selectedFamilyKey] ||
         system.families[system.defaultFamily];
     }
 
     function currentMode() {
       const family = currentFamily();
-
       return family.modes[selectedModeKey] ||
         family.modes[Object.keys(family.modes)[0]];
     }
@@ -305,22 +408,18 @@
 
       Object.entries(systems).forEach(([key, system]) => {
         const button = document.createElement("button");
-
-        button.classList.add("square");
-        button.classList.add("system-square");
+        button.classList.add("square", "system-square");
 
         if (key === selectedSystemKey) {
           button.classList.add("selected");
         }
 
-        button.dataset.system = key;
         button.textContent = system.label;
 
         button.addEventListener("click", () => {
           selectedSystemKey = key;
 
           const newSystem = currentSystem();
-
           selectedRoot = newSystem.defaultRoot || "C";
           selectedFamilyKey = newSystem.defaultFamily;
           selectedModeKey = newSystem.defaultMode;
@@ -340,21 +439,18 @@
 
       Object.entries(pitchClasses).forEach(([key, pitch]) => {
         const button = document.createElement("button");
-
-        button.classList.add("square");
-        button.classList.add(pitch.className);
+        button.classList.add("square", pitch.className);
 
         if (key === selectedRoot) {
           button.classList.add("selected");
         }
 
-        button.dataset.root = key;
         button.textContent = pitch.display;
 
         button.addEventListener("click", () => {
           selectedRoot = key;
           buildKeyGrid();
-          updateSelectionLabel();
+          updateDisplay();
         });
 
         keyGrid.appendChild(button);
@@ -364,30 +460,23 @@
     function buildFamilyGrid() {
       familyGrid.innerHTML = "";
 
-      const families = currentSystem().families;
-
-      Object.entries(families).forEach(([key, family]) => {
+      Object.entries(currentSystem().families).forEach(([key, family]) => {
         const button = document.createElement("button");
-
-        button.classList.add("square");
-        button.classList.add("family-square");
+        button.classList.add("square", "family-square");
 
         if (key === selectedFamilyKey) {
           button.classList.add("selected");
         }
 
-        button.dataset.family = key;
         button.textContent = family.label;
 
         button.addEventListener("click", () => {
           selectedFamilyKey = key;
-
-          const newFamily = currentFamily();
-          selectedModeKey = Object.keys(newFamily.modes)[0];
+          selectedModeKey = Object.keys(currentFamily().modes)[0];
 
           buildFamilyGrid();
           buildModeGrid();
-          updateSelectionLabel();
+          updateDisplay();
         });
 
         familyGrid.appendChild(button);
@@ -397,49 +486,23 @@
     function buildModeGrid() {
       modeGrid.innerHTML = "";
 
-      const modes = currentFamily().modes;
-
-      Object.entries(modes).forEach(([key, mode]) => {
+      Object.entries(currentFamily().modes).forEach(([key, mode]) => {
         const button = document.createElement("button");
-
-        button.classList.add("square");
-        button.classList.add("mode-square");
+        button.classList.add("square", "mode-square");
 
         if (key === selectedModeKey) {
           button.classList.add("selected");
         }
 
-        button.dataset.mode = key;
         button.textContent = mode.shortLabel || mode.label;
 
         button.addEventListener("click", () => {
           selectedModeKey = key;
-
           buildModeGrid();
-          updateSelectionLabel();
+          updateDisplay();
         });
 
         modeGrid.appendChild(button);
-      });
-    }
-
-    function updateToneButtons() {
-      document.querySelectorAll(".tone-square").forEach(button => {
-        button.classList.toggle(
-          "selected",
-          button.dataset.set === selectedSet
-        );
-      });
-    }
-
-    function updateOctaveButtons() {
-      document.querySelectorAll(".octave-square").forEach(button => {
-        const octave = parseInt(button.dataset.octave, 10);
-
-        button.classList.toggle(
-          "selected",
-          selectedOctaves.includes(octave)
-        );
       });
     }
 
@@ -448,34 +511,42 @@
 
       Object.entries(voices).forEach(([key, voice]) => {
         const button = document.createElement("button");
-
-        button.classList.add("square");
-        button.classList.add("voice-square");
+        button.classList.add("square", "voice-square");
 
         if (key === selectedVoice) {
           button.classList.add("selected");
         }
 
-        button.dataset.voice = key;
         button.textContent = voice.label;
 
         button.addEventListener("click", () => {
           selectedVoice = key;
-
           buildVoiceGrid();
-          updateSelectionLabel();
+          updateDisplay();
         });
 
         voiceGrid.appendChild(button);
       });
     }
 
+    function updateToneButtons() {
+      document.querySelectorAll(".tone-square").forEach(button => {
+        button.classList.toggle("selected", button.dataset.set === selectedSet);
+      });
+    }
+
+    function updateOctaveButtons() {
+      document.querySelectorAll(".octave-square").forEach(button => {
+        const octave = parseInt(button.dataset.octave, 10);
+        button.classList.toggle("selected", selectedOctaves.includes(octave));
+      });
+    }
+
     document.querySelectorAll(".tone-square").forEach(button => {
       button.addEventListener("click", () => {
         selectedSet = button.dataset.set;
-
         updateToneButtons();
-        updateSelectionLabel();
+        updateDisplay();
       });
     });
 
@@ -489,23 +560,31 @@
           selectedOctaves.push(octave);
         }
 
-        selectedOctaves.sort((a, b) => a - b);
+        selectedOctaves.sort((a,b) => a - b);
 
         if (selectedOctaves.length === 0) {
           selectedOctaves = [...(currentSystem().defaultOctaves || [2,3,4,5])];
         }
 
         updateOctaveButtons();
-        updateSelectionLabel();
+        updateDisplay();
       });
     });
 
-    function updateSelectionLabel() {
+    function updateDisplay() {
       const system = currentSystem();
       const family = currentFamily();
       const mode = currentMode();
       const pitch = pitchClasses[selectedRoot];
       const voice = voices[selectedVoice];
+
+      systemCurrent.textContent = system.label;
+      rootCurrent.textContent = pitch.display;
+      familyCurrent.textContent = family.label;
+      modeCurrent.textContent = mode.label;
+      toneCurrent.textContent = selectedSet === "native" ? "Native Only" : "Full Set";
+      octaveCurrent.textContent = selectedOctaves.join(",");
+      voiceCurrent.textContent = voice.label;
 
       selectionLabel.textContent =
         system.label +
@@ -544,7 +623,7 @@
       updateToneButtons();
       updateOctaveButtons();
       buildVoiceGrid();
-      updateSelectionLabel();
+      updateDisplay();
     }
 
     buildAll();

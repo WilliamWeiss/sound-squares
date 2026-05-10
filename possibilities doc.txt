@@ -13,3 +13,7 @@ remove the size differences in western, and enforce the highlighting colors.
 set the index to point to the mode, etc. specific to that selection (like Japanese, Andean, etc.)
 what about the future - setting the voice? 
 and what about being able to choose the interval pattern for the "native" designation?
+Chord Factory
+Design Studio
+Recording Studio
+Guitar studio - using the frets to show Orumi colors to help identify chord possibilities

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="orumi-catalog.js"></script>
+  <script src="themes.js"></script>
+  <script src="voices.js"></script>
 
   <style>
     body {
@@ -209,8 +211,16 @@
       const system = getSystem(systemKey);
 
       const root = params.get("root") || system.defaultRoot || "C";
-      const familyKey = params.get("family") || params.get("architecture") || system.defaultFamily;
-      const modeKey = params.get("scaleMode") || params.get("mode") || system.defaultMode;
+      const familyKey =
+        params.get("family") ||
+        params.get("architecture") ||
+        system.defaultFamily;
+
+      const modeKey =
+        params.get("scaleMode") ||
+        params.get("mode") ||
+        system.defaultMode;
+
       const setView = params.get("set") || system.defaultSet || "native";
       const voice = params.get("voice") || system.defaultVoice || "warm";
       const octavesParam = params.get("octaves");
@@ -219,7 +229,10 @@
       const mode = getMode(family, modeKey);
 
       let octaves = octavesParam
-        ? octavesParam.split(",").map(value => parseInt(value, 10)).filter(value => value >= 1 && value <= 6)
+        ? octavesParam
+            .split(",")
+            .map(value => parseInt(value, 10))
+            .filter(value => value >= 1 && value <= 6)
         : [...(system.defaultOctaves || [2, 3, 4, 5])];
 
       if (octaves.length === 0) {
@@ -229,7 +242,9 @@
       octaves = [...new Set(octaves)].sort((a, b) => a - b);
 
       const rootKey = pitchClasses[root] ? root : "C";
-      const voiceKey = ORUMI_CATALOG.voices[voice] ? voice : system.defaultVoice;
+      const voiceKey = ORUMI_CATALOG.voices[voice]
+        ? voice
+        : system.defaultVoice || "warm";
 
       return {
         systemKey,
@@ -243,14 +258,6 @@
         voice: voiceKey,
         octaves
       };
-    }
-
-    function applyTint(mode) {
-      const tintKey = mode.tint || "neutral";
-      const tint = ORUMI_CATALOG.tints[tintKey] || ORUMI_CATALOG.tints.neutral;
-
-      document.body.style.setProperty("--native-glow", tint.native);
-      document.body.style.setProperty("--outside-glow", tint.outside);
     }
 
     function midiToPc(midi) {
@@ -278,7 +285,7 @@
         octaves
       } = getSettingsFromUrl();
 
-      applyTint(mode);
+      ORUMI_THEMES.apply(system, mode);
 
       const rootNumber = pitchClasses[root].number;
       const nativeFormula = mode.formula;
@@ -379,20 +386,6 @@
     startButton.addEventListener("click", startAudio);
     startButton.addEventListener("touchend", startAudio);
 
-    function createOscillator(freq, type, gainValue, detune = 0) {
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-
-      osc.type = type;
-      osc.frequency.value = freq;
-      osc.detune.value = detune;
-      gain.gain.value = gainValue;
-
-      osc.connect(gain);
-
-      return { osc, gain };
-    }
-
     function startSustainedNote(button, pointerId) {
       if (!audioContext) {
         statusText.textContent = "Tap Start Audio first";
@@ -406,111 +399,13 @@
       const now = audioContext.currentTime;
       const freq = parseFloat(button.dataset.note);
 
-      const mainGain = audioContext.createGain();
-      const filter = audioContext.createBiquadFilter();
-
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(1800, now);
-      mainGain.gain.setValueAtTime(0.0001, now);
-
-      const oscillators = [];
-
-      if (voice === "koto") {
-        mainGain.gain.exponentialRampToValueAtTime(0.30, now + 0.008);
-        mainGain.gain.exponentialRampToValueAtTime(0.035, now + 1.05);
-        filter.frequency.setValueAtTime(2600, now);
-        filter.frequency.exponentialRampToValueAtTime(900, now + 0.9);
-
-        oscillators.push(createOscillator(freq, "triangle", 0.62));
-        oscillators.push(createOscillator(freq * 2, "sine", 0.16));
-        oscillators.push(createOscillator(freq * 3, "sine", 0.06));
-
-      } else if (voice === "choir") {
-        mainGain.gain.linearRampToValueAtTime(0.16, now + 0.45);
-        filter.frequency.setValueAtTime(950, now);
-
-        oscillators.push(createOscillator(freq, "sine", 0.45, -7));
-        oscillators.push(createOscillator(freq, "triangle", 0.32, 5));
-        oscillators.push(createOscillator(freq * 2, "sine", 0.10, 2));
-        oscillators.push(createOscillator(freq * 0.5, "sine", 0.08, -4));
-
-      } else if (voice === "ocarina") {
-        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.08);
-        filter.frequency.setValueAtTime(1200, now);
-
-        oscillators.push(createOscillator(freq, "triangle", 0.65));
-        oscillators.push(createOscillator(freq * 2, "sine", 0.08));
-
-      } else if (voice === "piano") {
-        mainGain.gain.exponentialRampToValueAtTime(0.26, now + 0.01);
-        mainGain.gain.exponentialRampToValueAtTime(0.08, now + 0.8);
-        filter.frequency.setValueAtTime(2200, now);
-
-        oscillators.push(createOscillator(freq, "triangle", 0.55));
-        oscillators.push(createOscillator(freq * 2, "sine", 0.18));
-        oscillators.push(createOscillator(freq * 3, "sine", 0.07));
-
-      } else if (voice === "guitar") {
-        mainGain.gain.exponentialRampToValueAtTime(0.24, now + 0.01);
-        mainGain.gain.exponentialRampToValueAtTime(0.04, now + 0.7);
-        filter.frequency.setValueAtTime(1800, now);
-
-        oscillators.push(createOscillator(freq, "triangle", 0.55));
-        oscillators.push(createOscillator(freq * 2, "sine", 0.12));
-
-      } else if (voice === "organ") {
-        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.04);
-        filter.frequency.setValueAtTime(1600, now);
-
-        oscillators.push(createOscillator(freq, "sine", 0.40));
-        oscillators.push(createOscillator(freq * 2, "triangle", 0.18));
-        oscillators.push(createOscillator(freq * 0.5, "sine", 0.10));
-
-      } else if (voice === "bell") {
-        mainGain.gain.exponentialRampToValueAtTime(0.22, now + 0.01);
-        mainGain.gain.exponentialRampToValueAtTime(0.05, now + 1.2);
-        filter.frequency.setValueAtTime(2600, now);
-
-        oscillators.push(createOscillator(freq, "sine", 0.42));
-        oscillators.push(createOscillator(freq * 2.4, "sine", 0.16));
-        oscillators.push(createOscillator(freq * 3.01, "sine", 0.08));
-
-      } else if (voice === "synth") {
-        mainGain.gain.linearRampToValueAtTime(0.17, now + 0.03);
-        filter.frequency.setValueAtTime(1400, now);
-
-        oscillators.push(createOscillator(freq, "sawtooth", 0.28));
-        oscillators.push(createOscillator(freq * 0.5, "square", 0.08));
-
-      } else if (voice === "pure") {
-        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
-        filter.frequency.setValueAtTime(1800, now);
-
-        oscillators.push(createOscillator(freq, "sine", 0.65));
-
-      } else {
-        mainGain.gain.linearRampToValueAtTime(0.18, now + 0.03);
-        filter.frequency.setValueAtTime(1500, now);
-
-        oscillators.push(createOscillator(freq, "triangle", 0.62));
-        oscillators.push(createOscillator(freq * 2, "sine", 0.08));
-      }
-
-      oscillators.forEach(({ osc, gain }) => {
-        osc.connect(filter);
-        gain.disconnect();
-        osc.connect(gain);
-        gain.connect(filter);
-        osc.start(now);
-      });
-
-      filter.connect(mainGain);
-      mainGain.connect(audioContext.destination);
+      const voiceNode =
+        ORUMI_VOICES.buildVoice(audioContext, voice, freq, now);
 
       activeNotes.set(pointerId, {
         button,
-        oscillators: oscillators.map(item => item.osc),
-        gain: mainGain,
+        oscillators: voiceNode.oscillators,
+        gain: voiceNode.gain,
         pc: button.dataset.pc,
         name: button.dataset.name,
         displayName: button.dataset.displayName,
@@ -526,15 +421,7 @@
 
       if (!note || !audioContext) return;
 
-      const now = audioContext.currentTime;
-
-      note.gain.gain.cancelScheduledValues(now);
-      note.gain.gain.setValueAtTime(note.gain.gain.value, now);
-      note.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-
-      note.oscillators.forEach(osc => {
-        osc.stop(now + 0.14);
-      });
+      ORUMI_VOICES.stopVoice(note, audioContext, 0.12);
 
       note.button.classList.remove("active");
       activeNotes.delete(pointerId);

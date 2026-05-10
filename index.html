@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sound Squares</title>
+  <title>Orumi Sound Squares</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="orumi-catalog.js"></script>
 
   <style>
     body {
@@ -85,78 +87,82 @@
 
 <body>
 
-  <h1>Sound Squares</h1>
+  <h1>Orumi Sound Squares</h1>
 
   <div class="subtitle">
     Choose a musical world
   </div>
 
-  <div class="menu-grid">
+  <div class="menu-grid" id="menuGrid"></div>
 
-    <a
-      class="tile western"
-      href="player.html?system=western">
-      <div class="abbr">WE</div>
-      <div class="label">Western</div>
-    </a>
+  <script>
+    const menuGrid = document.getElementById("menuGrid");
+    const systems = ORUMI_CATALOG.systems;
 
-    <a
-      class="tile japanese"
-      href="player.html?system=japanese">
-      <div class="abbr">JA</div>
-      <div class="label">Japanese</div>
-    </a>
+    const systemOrder = [
+      "western",
+      "japanese",
+      "chinese",
+      "indian",
+      "maqam",
+      "celtic",
+      "blues",
+      "african",
+      "andean"
+    ];
 
-    <a
-      class="tile chinese"
-      href="player.html?system=chinese">
-      <div class="abbr">CH</div>
-      <div class="label">Chinese</div>
-    </a>
+    function buildSystemLink(systemKey, system) {
+      const root = encodeURIComponent(system.defaultRoot || "C");
+      const family = encodeURIComponent(system.defaultFamily);
+      const scaleMode = encodeURIComponent(system.defaultMode);
+      const setView = encodeURIComponent(system.defaultSet || "native");
+      const octaves = encodeURIComponent(
+        (system.defaultOctaves || [2,3,4,5]).join(",")
+      );
+      const voice = encodeURIComponent(system.defaultVoice || "warm");
 
-    <a
-      class="tile indian"
-      href="player.html?system=indian">
-      <div class="abbr">IN</div>
-      <div class="label">Indian</div>
-    </a>
+      return (
+        "player.html" +
+        "?system=" + encodeURIComponent(systemKey) +
+        "&root=" + root +
+        "&family=" + family +
+        "&scaleMode=" + scaleMode +
+        "&set=" + setView +
+        "&octaves=" + octaves +
+        "&voice=" + voice
+      );
+    }
 
-    <a
-      class="tile maqam"
-      href="player.html?system=maqam">
-      <div class="abbr">MA</div>
-      <div class="label">Maqam</div>
-    </a>
+    function buildMenu() {
+      menuGrid.innerHTML = "";
 
-    <a
-      class="tile celtic"
-      href="player.html?system=celtic">
-      <div class="abbr">CE</div>
-      <div class="label">Celtic</div>
-    </a>
+      systemOrder.forEach(systemKey => {
+        const system = systems[systemKey];
 
-    <a
-      class="tile blues"
-      href="player.html?system=blues">
-      <div class="abbr">BL</div>
-      <div class="label">Blues</div>
-    </a>
+        if (!system) return;
 
-    <a
-      class="tile african"
-      href="player.html?system=african">
-      <div class="abbr">AF</div>
-      <div class="label">African</div>
-    </a>
+        const link = document.createElement("a");
+        link.classList.add("tile");
+        link.classList.add(systemKey);
+        link.href = buildSystemLink(systemKey, system);
 
-    <a
-      class="tile andean"
-      href="player.html?system=andean">
-      <div class="abbr">AN</div>
-      <div class="label">Andean</div>
-    </a>
+        const abbr = document.createElement("div");
+        abbr.classList.add("abbr");
+        abbr.textContent = system.shortLabel || system.label.slice(0, 2).toUpperCase();
 
-  </div>
+        const label = document.createElement("div");
+        label.classList.add("label");
+        label.textContent = system.label;
+
+        link.appendChild(abbr);
+        link.appendChild(label);
+
+        menuGrid.appendChild(link);
+      });
+    }
+
+    buildMenu();
+  </script>
 
 </body>
 </html>
